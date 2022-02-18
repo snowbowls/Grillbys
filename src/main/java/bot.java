@@ -6,9 +6,8 @@ public class bot {
 
     public static void main(String[] args) throws Exception{
 
-        JDABuilder builder = JDABuilder.createDefault("OTQ0MjQ3NjU4NTUyMzg1NTY2.Yg-1KQ.4ki6xUbKh7o_VlXHrKppWQZPYJY");
+        JDABuilder builder = JDABuilder.createDefault("ree");
         builder.build();
-
 
     }
 }
