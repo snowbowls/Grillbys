@@ -9,7 +9,6 @@ public class plusEvent extends ListenerAdapter {
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
 
 
-
         if(event.getReactionEmote().getId().equals("900119408859578451")){
            // event.getChannel().sendMessage("YEEET").queue();
             System.out.printf("%s\n", event.getChannel());
