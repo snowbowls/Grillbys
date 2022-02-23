@@ -17,7 +17,13 @@
         <dependency>
             <groupId>net.dv8tion</groupId>
             <artifactId>JDA</artifactId>
-            <version>5.0.0-alpha.5</version>
+            <version>5.0.0-alpha.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.12.10</version>
         </dependency>
 
     </dependencies>
@@ -26,9 +32,8 @@
         <repository>
             <id>jcenter</id>
             <name>jcenter-bintray</name>
-            <url>https://repo1.maven.org/maven2/</url>
+            <url>https://jcenter.bintray.com</url>
         </repository>
-
     </repositories>
 
 </project>
