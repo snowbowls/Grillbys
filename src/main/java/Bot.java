@@ -9,9 +9,14 @@ public class Bot {
     public static void main(String[] args) throws Exception{
 
         JDABuilder builder = JDABuilder.createDefault(TOKEN);
+
+        // Credit Score Events
         builder.addEventListeners(new AddReactEvent());
         builder.addEventListeners(new RemoveReactEvent());
         builder.addEventListeners(new ShowCommandEvent());
+
+        // Other Events
+        builder.addEventListeners(new TagUserEvent());
         builder.build();
 
 
