@@ -10,13 +10,12 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.lt;
 
 public class ShowCommandEvent extends ListenerAdapter {
     public static final String uri = System.getenv("URI");
 
     public void onMessageReceived(MessageReceivedEvent event){
-        String username = event.getMessage().getAuthor().getName();
+        //String username = event.getAuthor().getName();
         String userid = event.getMessage().getAuthor().getId();
 
         String[] msg = event.getMessage().getContentRaw().split(" ");
@@ -35,7 +34,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                         if (doc == null) {
                             System.err.println("DNE");
                         } else {
-                            event.getChannel().sendMessage("User: " + username + "\nSocial Credit: " + doc.getInteger("score")).complete();
+                            event.getChannel().sendMessage("User: " + doc.getString("username") + "\nSocial Credit: " + doc.getInteger("score")).complete();
                         }
                     } catch (MongoException me) {
                         System.err.println("ERROR");
@@ -79,7 +78,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                         if (doc == null) {
                             System.err.println("DNE");
                         } else {
-                            event.getChannel().sendMessage("User: " + username + "\nSocial Credit: " + doc.getInteger("score")).complete();
+                            event.getChannel().sendMessage("User: " + doc.getString("username") + "\nSocial Credit: " + doc.getInteger("score")).complete();
                         }
                     } catch (MongoException me) {
                         System.err.println("ERROR");
@@ -87,7 +86,8 @@ public class ShowCommandEvent extends ListenerAdapter {
                 }
             }
             else{
-                username = event.getMessage().getContentRaw().substring(6);
+                String username = event.getMessage().getContentRaw().substring(6);
+                System.out.println(username);
                 try (MongoClient mongoClient = MongoClients.create(uri)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
@@ -95,19 +95,18 @@ public class ShowCommandEvent extends ListenerAdapter {
                         Bson projectionFields = Projections.fields(
                                 Projections.include("username", "score"),
                                 Projections.excludeId());
-                        Document doc = collection.find(eq("userid", userid))
+                        Document doc = collection.find(eq("username", username))
                                 .projection(projectionFields)
                                 .first();
                         if (doc == null) {
                             System.err.println("DNE");
                         } else {
-                            event.getChannel().sendMessage("User: " + username + "\nSocial Credit: " + doc.getInteger("score")).complete();
+                            event.getChannel().sendMessage("User: " + doc.getString("username") + "\nSocial Credit: " + doc.getInteger("score")).complete();
                         }
                     } catch (MongoException me) {
                         System.err.println("ERROR");
                     }
                 }
-
             }
         }
     }
