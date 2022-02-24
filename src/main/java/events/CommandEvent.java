@@ -6,16 +6,14 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
-import com.mongodb.client.result.InsertOneResult;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
-import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class creditcomEvent extends ListenerAdapter {
+public class CommandEvent extends ListenerAdapter {
     public static final String uri = System.getenv("URI");
 
     public void onMessageReceived(MessageReceivedEvent event){
