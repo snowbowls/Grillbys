@@ -1,26 +1,46 @@
 package events;
 
-import com.mongodb.*;
+import com.mongodb.MongoException;
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
+import com.mongodb.client.result.InsertOneResult;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
+import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Arrays;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class mondoEvent extends ListenerAdapter {
 
-    public static final String MONDODB = System.getenv("MONDODB");
+    public static final String uri = System.getenv("URI");
 
-    public void onMessageReceived(@NotNull MessageReceivedEvent event){
+    public void onMessageReceived(MessageReceivedEvent event){
 
-        MongoClient mongoClient = new MongoClient(new MongoClientURI(MONDODB));
-        MongoDatabase database = mongoClient.getDatabase("sample_restaurants");
-        MongoCollection<Document> collection = database.getCollection("sample_restaurants.restaurants\n");
-        Document student1 = collection.find(new Document("cuisine", "American")).first();
+        String username = event.getAuthor().getName();
 
-       // System.out.println("Student 1: " + student1.toJson()); // IT BREAKS HERE
 
+        try (MongoClient mongoClient = MongoClients.create(uri)) {
+            MongoDatabase database = mongoClient.getDatabase("ChillGrill");
+            MongoCollection<Document> collection = database.getCollection("socialcredit");
+            try {
+                InsertOneResult result = collection.insertOne(new Document()
+                        .append("_id", new ObjectId())
+                        .append("user", username)
+                        .append("score", 0));
+                System.out.println("Success! Inserted document id: " + result.getInsertedId());
+            } catch (MongoException me) {
+                System.err.println("Unable to insert due to an error: " + me);
+            }
+        }
 
 
 

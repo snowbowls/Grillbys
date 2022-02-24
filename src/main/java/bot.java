@@ -1,5 +1,3 @@
-import com.mongodb.MongoClient;
-import com.mongodb.MongoClientURI;
 import events.HelloEvent;
 import events.mondoEvent;
 import events.plusEvent;
@@ -23,7 +21,7 @@ public class bot {
         JDABuilder builder = JDABuilder.createDefault(TOKEN);
         builder.addEventListeners(new plusEvent());
         builder.addEventListeners(new HelloEvent());
-        builder.addEventListeners(new mondoEvent());
+        //builder.addEventListeners(new mondoEvent());
         builder.build();
 
 
