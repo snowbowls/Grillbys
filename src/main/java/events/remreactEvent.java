@@ -9,7 +9,6 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
-import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
@@ -18,7 +17,7 @@ import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class remplusEvent extends ListenerAdapter {
+public class remreactEvent extends ListenerAdapter {
     public static final String uri = System.getenv("URI");
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
 
@@ -40,7 +39,7 @@ public class remplusEvent extends ListenerAdapter {
                         InsertOneResult result = collection.insertOne(new Document()
                                 .append("_id", new ObjectId())
                                 .append("user", username)
-                                .append("score", 0));
+                                .append("score", 15));
 
                         System.out.println("Success! Inserted document id: " + result.getInsertedId());
                     } catch (MongoException me) {
