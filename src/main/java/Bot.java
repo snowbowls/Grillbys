@@ -12,7 +12,6 @@ public class Bot {
         builder.addEventListeners(new AddReactEvent());
         builder.addEventListeners(new RemoveReactEvent());
         builder.addEventListeners(new CommandEvent());
-        //builder.addEventListeners(new mondoEvent());
         builder.build();
 
 
