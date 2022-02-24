@@ -11,7 +11,6 @@ import java.util.*;
 
 public class bot {
 
-
     public static final String TOKEN = System.getenv("TOKEN");
 
     public static void main(String[] args) throws Exception{

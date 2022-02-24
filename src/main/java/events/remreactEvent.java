@@ -22,8 +22,10 @@ public class remreactEvent extends ListenerAdapter {
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
 
         String username = event.retrieveMessage().complete().getAuthor().getName();
-        String reactor = "ree"; event.retrieveUser().complete().getName();
-        //System.out.printf("user: %s reactor: %s", username, reactor);
+        String reactor = event.retrieveUser().complete().getName();
+
+
+        // Trigger when message rem react +15
         if(event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
             try (MongoClient mongoClient = MongoClients.create(uri)) {
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
@@ -34,31 +36,31 @@ public class remreactEvent extends ListenerAdapter {
                 Document doc = collection.find(eq("user", username))
                         .projection(projectionFields)
                         .first();
-                if (doc == null) {
+                if (doc == null) { // Does this ever trigger?
                     try {
                         InsertOneResult result = collection.insertOne(new Document()
                                 .append("_id", new ObjectId())
                                 .append("user", username)
-                                .append("score", 15));
+                                .append("score", -15));
 
-                        System.out.println("Success! Inserted document id: " + result.getInsertedId());
+                        System.out.println("\nSuccess! Inserted document id: " + result.getInsertedId());
                     } catch (MongoException me) {
-                        System.err.println("Unable to insert due to an error: " + me);
+                        System.err.println("\nUnable to insert due to an error: " + me);
                     }
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal - 15);
-                    System.out.println("old: " + currVal + " new " + doc.getInteger("score"));
+                    System.out.println("\nold: " + currVal + " new " + doc.getInteger("score"));
                     try {
                         Bson query = eq("user", username);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
 
                         UpdateResult result = collection.replaceOne(query, doc, opts);
 
-                        System.out.println("Modified document count: " + result.getModifiedCount());
-                        System.out.println("Upserted id: " + result.getUpsertedId()); // only contains a value when an upsert is performed
+                        System.out.println("\nModified document count: " + result.getModifiedCount());
+                        System.out.println("\nUpserted id: " + result.getUpsertedId()); // only contains a value when an upsert is performed
                     } catch (MongoException me) {
-                        System.err.println("Unable to update due to an error: " + me);
+                        System.err.println("\nUnable to update due to an error: " + me);
                     }
                 }
             }
@@ -69,7 +71,7 @@ public class remreactEvent extends ListenerAdapter {
 
 
 
-
+        // Trigger when message rem react -15
         if(event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
             try (MongoClient mongoClient = MongoClients.create(uri)) {
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
@@ -80,12 +82,12 @@ public class remreactEvent extends ListenerAdapter {
                 Document doc = collection.find(eq("user", username))
                         .projection(projectionFields)
                         .first();
-                if (doc == null) {
+                if (doc == null) { // Does this ever trigger?
                     try {
                         InsertOneResult result = collection.insertOne(new Document()
                                 .append("_id", new ObjectId())
                                 .append("user", username)
-                                .append("score", 0));
+                                .append("score", -15));
 
                         System.out.println("Success! Inserted document id: " + result.getInsertedId());
                     } catch (MongoException me) {
