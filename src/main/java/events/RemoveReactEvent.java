@@ -17,7 +17,7 @@ import org.bson.types.ObjectId;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class remreactEvent extends ListenerAdapter {
+public class RemoveReactEvent extends ListenerAdapter {
     public static final String uri = System.getenv("URI");
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
 
