@@ -19,6 +19,5 @@ public class Bot {
         builder.addEventListeners(new TagUserEvent());
 
         builder.build();
-
     }
 }
