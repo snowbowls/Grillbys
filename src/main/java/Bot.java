@@ -11,7 +11,7 @@ public class Bot {
         JDABuilder builder = JDABuilder.createDefault(TOKEN);
         builder.addEventListeners(new AddReactEvent());
         builder.addEventListeners(new RemoveReactEvent());
-        builder.addEventListeners(new CommandEvent());
+        builder.addEventListeners(new ShowCommandEvent());
         builder.build();
 
 

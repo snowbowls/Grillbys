@@ -9,6 +9,8 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
@@ -21,28 +23,33 @@ public class AddReactEvent extends ListenerAdapter {
     public static final String uri = System.getenv("URI");
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
 
-        String username = event.retrieveMessage().complete().getAuthor().getName();
-        String reactor = event.retrieveUser().complete().getName();
+        Message msg = event.retrieveMessage().complete();
+        String username = msg.getAuthor().getName();
+        String userid = msg.getAuthor().getId();
+        String reactor = "g";//msg.getAuthor().getName();
 
         // Trigger when message add react +15
         if(event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
             try (MongoClient mongoClient = MongoClients.create(uri)) {
+
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                 MongoCollection<Document> collection = database.getCollection("socialcredit");
                 Bson projectionFields = Projections.fields(
-                        Projections.include("user", "score"),
+                        Projections.include("username", "score", "userid"),
                         Projections.excludeId());
-                Document doc = collection.find(eq("user", username))
+                Document doc = collection.find(eq("userid", userid))
                         .projection(projectionFields)
                         .first();
                 if (doc == null) {
+
                     try {
                         InsertOneResult result = collection.insertOne(new Document()
                                 .append("_id", new ObjectId())
-                                .append("user", username)
+                                .append("username", username)
+                                .append("userid", userid)
                                 .append("score", 15));
 
-                        System.out.println("\nSuccess! Inserted document id: " + result.getInsertedId());
+                        System.out.println("\nSuccess! Inserted document id: " + result.getInsertedId() + "add15");
                     } catch (MongoException me) {
                         System.err.println("\nUnable to insert due to an error: " + me);
                     }
@@ -51,13 +58,12 @@ public class AddReactEvent extends ListenerAdapter {
                     doc.append("score", currVal + 15);
                     System.out.println("\nold: " + currVal + " new " + doc.getInteger("score"));
                     try {
-                        Bson query = eq("user", username);
+                        Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
 
                         UpdateResult result = collection.replaceOne(query, doc, opts);
 
                         System.out.println("\nModified document count: " + result.getModifiedCount());
-                        System.out.println("\nUpserted id: " + result.getUpsertedId()); // only contains a value when an upsert is performed
                     } catch (MongoException me) {
                         System.err.println("\nUnable to update due to an error: " + me);
                     }
@@ -72,9 +78,9 @@ public class AddReactEvent extends ListenerAdapter {
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                 MongoCollection<Document> collection = database.getCollection("socialcredit");
                 Bson projectionFields = Projections.fields(
-                        Projections.include("user", "score"),
+                        Projections.include("username", "score", "userid"),
                         Projections.excludeId());
-                Document doc = collection.find(eq("user", username))
+                Document doc = collection.find(eq("userid", userid))
                         .projection(projectionFields)
                         .first();
 
@@ -82,10 +88,11 @@ public class AddReactEvent extends ListenerAdapter {
                     try {
                         InsertOneResult result = collection.insertOne(new Document()
                                 .append("_id", new ObjectId())
-                                .append("user", username)
+                                .append("username", username)
+                                .append("userid", userid)
                                 .append("score", -15));
 
-                        System.out.println("\nSuccess! Inserted document id: " + result.getInsertedId());
+                        System.out.println("\nSuccess! Inserted document id: " + result.getInsertedId() + "add-15");
                     } catch (MongoException me) {
                         System.err.println("\nUnable to insert due to an error: " + me);
                     }
@@ -94,13 +101,12 @@ public class AddReactEvent extends ListenerAdapter {
                     doc.append("score", currVal - 15);
                     System.out.println("\nold: " + currVal + " new " + doc.getInteger("score"));
                     try {
-                        Bson query = eq("user", username);
+                        Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
 
                         UpdateResult result = collection.replaceOne(query, doc, opts);
 
                         System.out.println("\nModified document count: " + result.getModifiedCount());
-                        System.out.println("\nUpserted id: " + result.getUpsertedId()); // only contains a value when an upsert is performed
                     } catch (MongoException me) {
                         System.err.println("Unable to update due to an error: " + me);
                     }
