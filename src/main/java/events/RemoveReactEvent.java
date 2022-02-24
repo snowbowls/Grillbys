@@ -66,11 +66,6 @@ public class RemoveReactEvent extends ListenerAdapter {
             }
         }
 
-
-
-
-
-
         // Trigger when message rem react -15
         if(event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
             try (MongoClient mongoClient = MongoClients.create(uri)) {
