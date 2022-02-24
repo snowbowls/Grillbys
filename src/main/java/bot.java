@@ -1,6 +1,7 @@
 import events.HelloEvent;
 import events.mondoEvent;
 import events.plusEvent;
+import events.remplusEvent;
 import net.dv8tion.jda.api.AccountType;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
@@ -20,6 +21,7 @@ public class bot {
 
         JDABuilder builder = JDABuilder.createDefault(TOKEN);
         builder.addEventListeners(new plusEvent());
+        builder.addEventListeners(new remplusEvent());
         builder.addEventListeners(new HelloEvent());
         //builder.addEventListeners(new mondoEvent());
         builder.build();
