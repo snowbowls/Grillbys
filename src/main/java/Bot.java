@@ -17,6 +17,7 @@ public class Bot {
 
         // Other Events
         builder.addEventListeners(new TagUserEvent());
+
         builder.build();
 
 
