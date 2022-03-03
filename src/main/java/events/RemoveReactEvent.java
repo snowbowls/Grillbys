@@ -9,7 +9,6 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
-import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -20,9 +19,7 @@ import org.bson.types.ObjectId;
 import static com.mongodb.client.model.Filters.eq;
 
 public class RemoveReactEvent extends ListenerAdapter {
-
-    static Dotenv dotenv = Dotenv.load();
-
+    public static final String uri = System.getenv("URI");
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
 
         Message msg = event.retrieveMessage().complete();
@@ -33,7 +30,7 @@ public class RemoveReactEvent extends ListenerAdapter {
 
         // Trigger when message rem react +15
         if(event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
-            try (MongoClient mongoClient = MongoClients.create(dotenv.get("URI"))) {
+            try (MongoClient mongoClient = MongoClients.create(uri)) {
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                 MongoCollection<Document> collection = database.getCollection("socialcredit");
                 Bson projectionFields = Projections.fields(
@@ -75,7 +72,7 @@ public class RemoveReactEvent extends ListenerAdapter {
 
         // Trigger when message rem react -15
         if(event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
-            try (MongoClient mongoClient = MongoClients.create(dotenv.get("URI"))) {
+            try (MongoClient mongoClient = MongoClients.create(uri)) {
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                 MongoCollection<Document> collection = database.getCollection("socialcredit");
                 Bson projectionFields = Projections.fields(

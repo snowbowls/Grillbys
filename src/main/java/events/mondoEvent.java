@@ -8,7 +8,6 @@ import com.mongodb.client.MongoDatabase;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import com.mongodb.client.result.InsertOneResult;
-import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
@@ -22,14 +21,14 @@ import static com.mongodb.client.model.Filters.eq;
 
 public class mondoEvent extends ListenerAdapter {
 
-    static Dotenv dotenv = Dotenv.load();
+    public static final String uri = System.getenv("URI");
 
     public void onMessageReceived(MessageReceivedEvent event){
 
         String username = event.getAuthor().getName();
 
 
-        try (MongoClient mongoClient = MongoClients.create(dotenv.get("URI"))) {
+        try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("ChillGrill");
             MongoCollection<Document> collection = database.getCollection("socialcredit");
             try {

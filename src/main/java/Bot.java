@@ -6,13 +6,11 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class Bot{
 
-    static Dotenv dotenv = Dotenv.load();
-
+    public static final String TOKEN = System.getenv("TOKEN");
 
     public static void main(String[] args) throws Exception{
 
-        JDABuilder builder = JDABuilder.createDefault(dotenv.get("TOKEN")
-        );
+        JDABuilder builder = JDABuilder.createDefault(TOKEN);
 
         // Credit Score Events
         builder.addEventListeners(new AddReactEvent());
