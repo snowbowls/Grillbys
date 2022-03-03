@@ -4,6 +4,7 @@ import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
+import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
@@ -12,7 +13,7 @@ import org.bson.conversions.Bson;
 import static com.mongodb.client.model.Filters.eq;
 
 public class ShowCommandEvent extends ListenerAdapter {
-    public static final String uri = System.getenv("URI");
+    static Dotenv dotenv = Dotenv.load();
 
     public void onMessageReceived(MessageReceivedEvent event){
         //String username = event.getAuthor().getName();
@@ -21,7 +22,7 @@ public class ShowCommandEvent extends ListenerAdapter {
         String[] msg = event.getMessage().getContentRaw().split(" ");
         if(msg[0].equalsIgnoreCase("!show")){
             if(msg[1].equalsIgnoreCase("mine")){
-                try (MongoClient mongoClient = MongoClients.create(uri)) {
+                try (MongoClient mongoClient = MongoClients.create(dotenv.get("URI"))) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {
@@ -42,7 +43,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                 }
             }
             else if (msg[1].equalsIgnoreCase("all")){
-                try (MongoClient mongoClient = MongoClients.create(uri)) {
+                try (MongoClient mongoClient = MongoClients.create(dotenv.get("URI"))) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {
@@ -65,7 +66,7 @@ public class ShowCommandEvent extends ListenerAdapter {
             }
             else if (msg[1].substring(0,1).equalsIgnoreCase("<")){
                 userid = event.getMessage().getContentRaw().substring(9,event.getMessage().getContentRaw().length()-1);
-                try (MongoClient mongoClient = MongoClients.create(uri)) {
+                try (MongoClient mongoClient = MongoClients.create(dotenv.get("URI"))) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {
@@ -88,7 +89,7 @@ public class ShowCommandEvent extends ListenerAdapter {
             else{
                 String username = event.getMessage().getContentRaw().substring(6);
                 System.out.println(username);
-                try (MongoClient mongoClient = MongoClients.create(uri)) {
+                try (MongoClient mongoClient = MongoClients.create(dotenv.get("URI"))) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {

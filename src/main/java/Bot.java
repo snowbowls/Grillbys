@@ -1,14 +1,18 @@
 import events.*;
 import net.dv8tion.jda.api.JDABuilder;
+import io.github.cdimascio.dotenv.Dotenv;
+
 
 
 public class Bot{
 
-    public static final String TOKEN = System.getenv("TOKEN");
+    static Dotenv dotenv = Dotenv.load();
+
 
     public static void main(String[] args) throws Exception{
 
-        JDABuilder builder = JDABuilder.createDefault(TOKEN);
+        JDABuilder builder = JDABuilder.createDefault(dotenv.get("TOKEN")
+        );
 
         // Credit Score Events
         builder.addEventListeners(new AddReactEvent());
