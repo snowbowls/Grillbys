@@ -2,7 +2,7 @@ import events.*;
 import net.dv8tion.jda.api.JDABuilder;
 
 
-public class Bot {
+public class Bot{
 
     public static final String TOKEN = System.getenv("TOKEN");
 
