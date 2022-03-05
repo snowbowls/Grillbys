@@ -36,8 +36,8 @@ public class AddReactEvent extends ListenerAdapter {
         String userid = msg.getAuthor().getId();
         String reactor = "g";//msg.getAuthor().getName();
 
-        String jiApprove = "boatyvv:854825460494761994";
-        String jiCondemn = "breh:618946825252241429";
+        String jiApprove = "zhao_xina:900118296471425124";
+        String jiCondemn = "mao_zedong:934920068729536512";
 
         // Trigger when message add react +15
         if (event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {

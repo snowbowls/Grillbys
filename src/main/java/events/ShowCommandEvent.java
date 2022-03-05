@@ -24,6 +24,7 @@ public class ShowCommandEvent extends ListenerAdapter {
         String[] msg = event.getMessage().getContentRaw().split(" ");
         if(msg[0].equalsIgnoreCase("!show")){
             if(msg[1].equalsIgnoreCase("mine")){
+                System.out.println("!show mine");
                 try (MongoClient mongoClient = MongoClients.create(uri)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
@@ -45,6 +46,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                 }
             }
             else if (msg[1].equalsIgnoreCase("all")){
+                System.out.println("!show all");
                 try (MongoClient mongoClient = MongoClients.create(uri)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
