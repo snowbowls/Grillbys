@@ -9,6 +9,7 @@ import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.InsertOneResult;
 import com.mongodb.client.result.UpdateResult;
+import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
@@ -24,9 +25,12 @@ import java.util.List;
 import static com.mongodb.client.model.Filters.eq;
 
 public class AddReactEvent extends ListenerAdapter {
-    public static final String uri = System.getenv("URI");
+    //public static final String uri = System.getenv("URI");
+    public static Dotenv dotenv = Dotenv.load();
+
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
 
+        String uri = dotenv.get("URI");
         Message msg = event.retrieveMessage().complete();
         String username = msg.getAuthor().getName();
         String userid = msg.getAuthor().getId();

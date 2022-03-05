@@ -4,6 +4,7 @@ import com.mongodb.MongoException;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
+import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
@@ -12,11 +13,13 @@ import org.bson.conversions.Bson;
 import static com.mongodb.client.model.Filters.eq;
 
 public class ShowCommandEvent extends ListenerAdapter {
-    public static final String uri = System.getenv("URI");
+    //public static final String uri = System.getenv("URI");
+    public static Dotenv dotenv = Dotenv.load();
 
     public void onMessageReceived(MessageReceivedEvent event){
         //String username = event.getAuthor().getName();
         String userid = event.getMessage().getAuthor().getId();
+        String uri = dotenv.get("URI");
 
         String[] msg = event.getMessage().getContentRaw().split(" ");
         if(msg[0].equalsIgnoreCase("!show")){

@@ -6,9 +6,12 @@ import io.github.cdimascio.dotenv.Dotenv;
 
 public class Bot{
 
-    public static final String TOKEN = System.getenv("TOKEN");
+   // public static final String TOKEN = System.getenv("TOKEN");
+    public static Dotenv dotenv = Dotenv.load();
 
     public static void main(String[] args) throws Exception{
+
+        String TOKEN = dotenv.get("TOKEN");
 
         JDABuilder builder = JDABuilder.createDefault(TOKEN);
 
