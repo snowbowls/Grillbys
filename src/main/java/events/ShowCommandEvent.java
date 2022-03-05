@@ -15,11 +15,11 @@ import static com.mongodb.client.model.Filters.eq;
 public class ShowCommandEvent extends ListenerAdapter {
     //public static final String uri = System.getenv("URI");
     public static Dotenv dotenv = Dotenv.load();
+    String uri = dotenv.get("URI");
 
     public void onMessageReceived(MessageReceivedEvent event){
         //String username = event.getAuthor().getName();
         String userid = event.getMessage().getAuthor().getId();
-        String uri = dotenv.get("URI");
 
         String[] msg = event.getMessage().getContentRaw().split(" ");
         if(msg[0].equalsIgnoreCase("!show")){

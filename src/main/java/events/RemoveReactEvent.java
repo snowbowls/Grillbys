@@ -22,10 +22,10 @@ import static com.mongodb.client.model.Filters.eq;
 public class RemoveReactEvent extends ListenerAdapter {
     //public static final String uri = System.getenv("URI");
     public static Dotenv dotenv = Dotenv.load();
+    String uri = dotenv.get("URI");
 
     public void onMessageReactionRemove(MessageReactionRemoveEvent event) {
 
-        String uri = dotenv.get("URI");
         Message msg = event.retrieveMessage().complete();
         String username = msg.getAuthor().getName();
         String userid = msg.getAuthor().getId();
