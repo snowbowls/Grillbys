@@ -36,5 +36,9 @@ public class JonEvent extends ListenerAdapter {
             event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
         }
 
+        if(msg.equals("moe") && !trig[0]){
+            event.getChannel().sendMessage("moe").queue();
+        }
+
     }
 }
