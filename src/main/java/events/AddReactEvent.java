@@ -20,11 +20,16 @@ import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
 public class AddReactEvent extends ListenerAdapter {
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    LocalDateTime now = LocalDateTime.now();
+
     //public static final String uri = System.getenv("URI");
     public static Dotenv dotenv = Dotenv.load();
     String uri = dotenv.get("URI");
@@ -67,14 +72,12 @@ public class AddReactEvent extends ListenerAdapter {
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal + 15);
-                    System.out.println("\nold: " + currVal + " new " + doc.getInteger("score"));
+                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now) + "\n");
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
 
                         UpdateResult result = collection.replaceOne(query, doc, opts);
-
-                        System.out.println("\nModified document count: " + result.getModifiedCount());
                     } catch (MongoException me) {
                         System.err.println("\nUnable to update due to an error: " + me);
                     }
@@ -110,14 +113,12 @@ public class AddReactEvent extends ListenerAdapter {
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal - 15);
-                    System.out.println("\nold: " + currVal + " new " + doc.getInteger("score"));
+                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now) + "\n");
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
 
                         UpdateResult result = collection.replaceOne(query, doc, opts);
-
-                        System.out.println("\nModified document count: " + result.getModifiedCount());
                     } catch (MongoException me) {
                         System.err.println("Unable to update due to an error: " + me);
                     }

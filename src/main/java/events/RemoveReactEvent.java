@@ -17,9 +17,15 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 import static com.mongodb.client.model.Filters.eq;
 
 public class RemoveReactEvent extends ListenerAdapter {
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    LocalDateTime now = LocalDateTime.now();
+
     //public static final String uri = System.getenv("URI");
     public static Dotenv dotenv = Dotenv.load();
     String uri = dotenv.get("URI");
@@ -44,29 +50,16 @@ public class RemoveReactEvent extends ListenerAdapter {
                         .projection(projectionFields)
                         .first();
                 if (doc == null) { // Does this ever trigger?
-                    /*try {
-                        InsertOneResult result = collection.insertOne(new Document()
-                                .append("_id", new ObjectId())
-                                .append("username", username)
-                                .append("userid", userid)
-                                .append("score", -15));
-
-                        System.out.println("\nSuccess! Inserted document id: " + result.getInsertedId() + "rem15");
-                    } catch (MongoException me) {
-                        System.err.println("\nUnable to insert due to an error: " + me);
-                    }*/
                     System.out.print("NULL DOC at rem+15");
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal - 15);
-                    System.out.println("\nold: " + currVal + " new " + doc.getInteger("score"));
+                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now) + "\n");
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
 
                         UpdateResult result = collection.replaceOne(query, doc, opts);
-
-                        System.out.println("\nModified document count: " + result.getModifiedCount());
                     } catch (MongoException me) {
                         System.err.println("\nUnable to update due to an error: " + me);
                     }
@@ -86,29 +79,16 @@ public class RemoveReactEvent extends ListenerAdapter {
                         .projection(projectionFields)
                         .first();
                 if (doc == null) { // Does this ever trigger?
-                    /*try {
-                        InsertOneResult result = collection.insertOne(new Document()
-                                .append("_id", new ObjectId())
-                                .append("username", username)
-                                .append("userid", userid)
-                                .append("score", -15));
-
-                        System.out.println("Success! Inserted document id: " + result.getInsertedId() + "rem-15");
-                    } catch (MongoException me) {
-                        System.err.println("Unable to insert due to an error: " + me);
-                    }*/
                     System.out.print("NULL DOC at rem-15");
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal + 15);
-                    System.out.println("old: " + currVal + " new " + doc.getInteger("score"));
+                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now) + "\n");
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
 
                         UpdateResult result = collection.replaceOne(query, doc, opts);
-
-                        System.out.println("Modified document count: " + result.getModifiedCount());
                     } catch (MongoException me) {
                         System.err.println("Unable to update due to an error: " + me);
                     }
