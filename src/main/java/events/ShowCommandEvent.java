@@ -24,6 +24,7 @@ public class ShowCommandEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event){
         //String username = event.getAuthor().getName();
         String userid = event.getMessage().getAuthor().getId();
+
         List<Member> users = event.getGuild().getMembers();
         List<String> usersId = new ArrayList<>();
 

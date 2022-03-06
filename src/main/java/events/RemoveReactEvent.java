@@ -19,6 +19,7 @@ import org.bson.types.ObjectId;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -35,7 +36,7 @@ public class RemoveReactEvent extends ListenerAdapter {
         Message msg = event.retrieveMessage().complete();
         String username = msg.getAuthor().getName();
         String userid = msg.getAuthor().getId();
-        String reactor = msg.getAuthor().getName();
+        String reactor = Objects.requireNonNull(event.getUser()).getName();
 
 
         // Trigger when message rem react +15
@@ -54,7 +55,7 @@ public class RemoveReactEvent extends ListenerAdapter {
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal - 15);
-                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now) + "\n");
+                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
@@ -83,7 +84,7 @@ public class RemoveReactEvent extends ListenerAdapter {
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal + 15);
-                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now) + "\n");
+                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);

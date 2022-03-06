@@ -23,6 +23,7 @@ import org.bson.types.ObjectId;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -39,10 +40,12 @@ public class AddReactEvent extends ListenerAdapter {
         Message msg = event.retrieveMessage().complete();
         String username = msg.getAuthor().getName();
         String userid = msg.getAuthor().getId();
-        String reactor = msg.getAuthor().getName();
+        String reactor = Objects.requireNonNull(event.getUser()).getName();
 
         String jiApprove = "zhao_xina:900118296471425124";
         String jiCondemn = "mao_zedong:934920068729536512";
+
+        // ----- CREDIT SCORE -----
 
         // Trigger when message add react +15
         if (event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
@@ -65,14 +68,14 @@ public class AddReactEvent extends ListenerAdapter {
                                 .append("userid", userid)
                                 .append("score", 15));
 
-                        System.out.println("\nSuccess! Inserted document id: " + result.getInsertedId() + "add15");
+                        System.out.println("Success! Inserted document id: " + result.getInsertedId() + "add15");
                     } catch (MongoException me) {
-                        System.err.println("\nUnable to insert due to an error: " + me);
+                        System.err.println("Unable to insert due to an error: " + me);
                     }
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal + 15);
-                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now) + "\n");
+                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
@@ -106,14 +109,14 @@ public class AddReactEvent extends ListenerAdapter {
                                 .append("userid", userid)
                                 .append("score", -15));
 
-                        System.out.println("\nSuccess! Inserted document id: " + result.getInsertedId() + "add-15");
+                        System.out.println("Success! Inserted document id: " + result.getInsertedId() + "add-15");
                     } catch (MongoException me) {
-                        System.err.println("\nUnable to insert due to an error: " + me);
+                        System.err.println("Unable to insert due to an error: " + me);
                     }
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal - 15);
-                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now) + "\n");
+                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
@@ -163,5 +166,16 @@ public class AddReactEvent extends ListenerAdapter {
                 msg.addReaction(jiCondemn).queue();
             }
         }
+
+        // ----- OTHER -----
+
+        if(event.getReactionEmote().getId().equals("887861940012085288")){
+            msg.addReaction("soy_point:887860865439789086").queue();
+        }
+
+        if(event.getReactionEmote().getId().equals("802264386026340403")){
+            msg.addReaction("sus:802264386026340403").queue();
+        }
+
     }
 }
