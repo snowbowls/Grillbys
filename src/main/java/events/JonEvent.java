@@ -39,7 +39,6 @@ public class JonEvent extends ListenerAdapter {
         final Boolean[] trig2 = {false};
         ArrayList<String> triggersRDM = new ArrayList<>();
         triggersRDM.add("sus");
-        triggersRDM.add("us");
         triggersRDM.add("among");
         triggersRDM.add("amungus");
         triggersRDM.add("amogus");

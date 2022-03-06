@@ -39,7 +39,7 @@ public class AddReactEvent extends ListenerAdapter {
         Message msg = event.retrieveMessage().complete();
         String username = msg.getAuthor().getName();
         String userid = msg.getAuthor().getId();
-        String reactor = "g";//msg.getAuthor().getName();
+        String reactor = msg.getAuthor().getName();
 
         String jiApprove = "zhao_xina:900118296471425124";
         String jiCondemn = "mao_zedong:934920068729536512";

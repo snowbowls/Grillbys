@@ -5,10 +5,14 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import io.github.cdimascio.dotenv.Dotenv;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -20,6 +24,12 @@ public class ShowCommandEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event){
         //String username = event.getAuthor().getName();
         String userid = event.getMessage().getAuthor().getId();
+        List<Member> users = event.getGuild().getMembers();
+        List<String> usersId = new ArrayList<>();
+
+        for (Member u : users) {
+            usersId.add(u.getId());
+        }
 
         String[] msg = event.getMessage().getContentRaw().split(" ");
         if(msg[0].equalsIgnoreCase("!show")){
@@ -52,14 +62,17 @@ public class ShowCommandEvent extends ListenerAdapter {
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {
                         Bson projectionFields = Projections.fields(
-                                Projections.include("username", "score"),
+                                Projections.include("username", "userid", "score"),
                                 Projections.excludeId());
                         try (MongoCursor<Document> cursor = collection.find()
                                 .projection(projectionFields)
                                 .sort(Sorts.descending("username")).iterator()) {
                             while (cursor.hasNext()) {
                                 Document doc = cursor.next();
-                                event.getChannel().sendMessage("User: " + doc.getString("username") + "\nSocial Credit: " + doc.getInteger("score") + "\n-----------\n").complete();
+                                if (usersId.contains(doc.getString("userid"))) {
+
+                                    event.getChannel().sendMessage("User: " + doc.getString("username") + "\nSocial Credit: " + doc.getInteger("score") + "\n-----------\n").complete();
+                                }
                             }
                         }
                     } catch (MongoException me) {

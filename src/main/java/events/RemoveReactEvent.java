@@ -35,7 +35,7 @@ public class RemoveReactEvent extends ListenerAdapter {
         Message msg = event.retrieveMessage().complete();
         String username = msg.getAuthor().getName();
         String userid = msg.getAuthor().getId();
-        String reactor = "g";//msg.getAuthor().getName();
+        String reactor = msg.getAuthor().getName();
 
 
         // Trigger when message rem react +15
