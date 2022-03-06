@@ -55,7 +55,9 @@ public class RemoveReactEvent extends ListenerAdapter {
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal - 15);
+                    System.out.println("-------------------------------------------------");
                     System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
+                    System.out.println("Reactor: " + reactor);
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
@@ -84,7 +86,9 @@ public class RemoveReactEvent extends ListenerAdapter {
                 } else {
                     int currVal = doc.getInteger("score");
                     doc.append("score", currVal + 15);
+                    System.out.println("-------------------------------------------------");
                     System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
+                    System.out.println("Reactor: " + reactor);
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
