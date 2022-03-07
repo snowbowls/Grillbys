@@ -17,7 +17,7 @@ import java.util.List;
 import static com.mongodb.client.model.Filters.eq;
 
 public class ShowCommandEvent extends ListenerAdapter {
-    //public static final String uri = System.getenv("URI");
+
     public static Dotenv dotenv = Dotenv.load();
     String uri = dotenv.get("URI");
 
@@ -43,6 +43,7 @@ public class ShowCommandEvent extends ListenerAdapter {
 
         String[] msg = event.getMessage().getContentRaw().split(" ");
         if(msg[0].equalsIgnoreCase("!show")){
+            // !show mine
             if(msg[1].equalsIgnoreCase("mine")){
                 System.out.println("Command: !show mine -" + event.getMessage().getAuthor().getName() + " @" + event.getChannel().getName());
                 try (MongoClient mongoClient = MongoClients.create(settings)) {
@@ -56,7 +57,8 @@ public class ShowCommandEvent extends ListenerAdapter {
                                 .projection(projectionFields)
                                 .first();
                         if (doc == null) {
-                            System.err.println("DNE");
+                            event.getChannel().sendMessage("idk who you are, go get some credit then come back");
+                            System.err.println("DNE - " + event.getMessage().getAuthor().getName() + " @" + event.getChannel().getName());
                         } else {
                             event.getChannel().sendMessage("User: " + doc.getString("username") + "\nSocial Credit: " + doc.getInteger("score")).complete();
                         }
@@ -65,6 +67,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                     }
                 }
             }
+            // !show all
             else if (msg[1].equalsIgnoreCase("all")){
                 System.out.println("Command !show all -" + event.getMessage().getAuthor().getName() + " @" + event.getChannel().getName());
                 try (MongoClient mongoClient = MongoClients.create(settings)) {
@@ -95,6 +98,7 @@ public class ShowCommandEvent extends ListenerAdapter {
 
                 }
             }
+            // !show <user tag>
             else if (msg[1].substring(0,1).equalsIgnoreCase("<")){
                 userid = event.getMessage().getContentRaw().substring(9,event.getMessage().getContentRaw().length()-1);
                 try (MongoClient mongoClient = MongoClients.create(settings)) {
@@ -108,6 +112,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                                 .projection(projectionFields)
                                 .first();
                         if (doc == null) {
+                            event.getChannel().sendMessage("Does not exist").queue();
                             System.err.println("DNE");
                         } else {
                             event.getChannel().sendMessage("User: " + doc.getString("username") + "\nSocial Credit: " + doc.getInteger("score")).complete();
@@ -117,6 +122,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                     }
                 }
             }
+            // !show name
             else{
                 String username = event.getMessage().getContentRaw().substring(6);
                 System.out.println(username);
