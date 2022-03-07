@@ -18,6 +18,8 @@ public class JonEvent extends ListenerAdapter {
 
         JSONParser parser = new JSONParser();
         JSONArray dbTriggers = null;
+
+        // Load trigger words for dragonball stuff from json
         try {
             Object obj = parser.parse(new FileReader("keywords.json"));
             JSONObject jsonObject = (JSONObject) obj;
@@ -25,6 +27,8 @@ public class JonEvent extends ListenerAdapter {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Checking msg for triggers
         assert dbTriggers != null;
         for (Object key : dbTriggers) {
             if (msg.contains(key.toString())) {
@@ -32,20 +36,19 @@ public class JonEvent extends ListenerAdapter {
             }
         }
 
+        // triggered
         if (trig[0]) {
             event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
 
-            event.getMessage().addReaction("15_neg:934919187787288597").queue();
+            if(!event.getAuthor().getId().equals("222163619125788682")) {
+                event.getMessage().addReaction("15_neg:934919187787288597").queue();
+            }
             System.out.println(msg);
         }
 
+        // Delete me
         if (msg.contains("jiren") && !trig[0]) {
             //event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
-            System.out.println(msg);
-        }
-
-        if (msg.contains("moe") && !trig[0]) {
-            //event.getChannel().sendMessage("moe").queue();
             System.out.println(msg);
         }
 
@@ -81,7 +84,9 @@ public class JonEvent extends ListenerAdapter {
             event.getMessage().addReaction("3dHyperThink:676990578793381937").queue();
             event.getMessage().addReaction("grabs_you:666497981742186506").queue();
             event.getMessage().addReaction("shiba_not_amused:866064465359011880").queue();
-            event.getMessage().addReaction("15_neg:934919187787288597").queue();
+            if(!event.getAuthor().getId().equals("222163619125788682")) {
+                event.getMessage().addReaction("15_neg:934919187787288597").queue();
+            }
             System.out.println(msg);
         }
 

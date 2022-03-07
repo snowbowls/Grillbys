@@ -5,12 +5,16 @@ import com.mongodb.client.*;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
 import io.github.cdimascio.dotenv.Dotenv;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
+import java.awt.*;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,10 +28,7 @@ public class ShowCommandEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event){
         //String username = event.getAuthor().getName();
         String userid = event.getMessage().getAuthor().getId();
-
-        event.getGuild().loadMembers();
-        List<Member> users = event.getGuild().getMembers();
-        List<String> usersId = new ArrayList<>();
+        String[] msg = event.getMessage().getContentRaw().split(" ");
 
         ConnectionString connectionString = new ConnectionString(uri);
         MongoClientSettings settings = MongoClientSettings.builder()
@@ -37,11 +38,6 @@ public class ShowCommandEvent extends ListenerAdapter {
                         .build())
                 .build();
 
-        for (Member u : users) {
-            usersId.add(u.getId());
-        }
-
-        String[] msg = event.getMessage().getContentRaw().split(" ");
         if(msg[0].equalsIgnoreCase("!show")){
             // !show mine
             if(msg[1].equalsIgnoreCase("mine")){
@@ -70,6 +66,27 @@ public class ShowCommandEvent extends ListenerAdapter {
             // !show all
             else if (msg[1].equalsIgnoreCase("all")){
                 System.out.println("Command !show all -" + event.getMessage().getAuthor().getName() + " @" + event.getChannel().getName());
+
+                event.getGuild().loadMembers();
+                List<Member> users = event.getGuild().getMembers();
+                List<String> usersId = new ArrayList<>();
+
+                List<String> currUsers = new ArrayList<>();
+                List<String> currCredit = new ArrayList<>();
+
+                StringBuilder sbUser = new StringBuilder();
+                StringBuilder sbCredit = new StringBuilder();
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setTitle("社会信用体系", null);
+                eb.setColor(new Color(114, 41, 54));
+                eb.setImage("https://github.com/zekroTJA/DiscordBot/blob/master/.websrc/logo%20-%20title.png");
+
+
+
+                for (Member u : users) {
+                    usersId.add(u.getId());
+                }
+
                 try (MongoClient mongoClient = MongoClients.create(settings)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
@@ -84,13 +101,18 @@ public class ShowCommandEvent extends ListenerAdapter {
                                 Document doc = cursor.next();
                                 if (usersId.contains(doc.getString("userid"))) {
 
-                                    event.getChannel().sendMessage("User: "
-                                            + doc.getString("username")
-                                            + "\nSocial Credit: "
-                                            + doc.getInteger("score")
-                                            + "\n-----------\n").complete();
+                                    currUsers.add(doc.getString("username") + "\n");
+                                    currCredit.add(".\u3000" + doc.getInteger("score").toString() + "\n");
                                 }
                             }
+                            for(String s : currUsers)
+                                sbUser.append(s);
+                            for(String s: currCredit)
+                                sbCredit.append(s);
+
+                            eb.addField("Username", sbUser.toString(), true);
+                            eb.addField("Social Credit", sbCredit.toString(), true);
+                            event.getChannel().sendMessage(eb.build()).queue();
                         }
                     } catch (MongoException me) {
                         System.err.println("ERROR");
