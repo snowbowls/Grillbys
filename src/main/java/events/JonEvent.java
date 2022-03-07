@@ -35,7 +35,7 @@ public class JonEvent extends ListenerAdapter {
         }
 
         if(msg.contains("moe") && !trig[0]){
-            event.getChannel().sendMessage("moe").queue();
+            //event.getChannel().sendMessage("moe").queue();
             System.out.println(msg);
         }
 

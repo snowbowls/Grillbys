@@ -81,7 +81,11 @@ public class ShowCommandEvent extends ListenerAdapter {
                                 Document doc = cursor.next();
                                 if (usersId.contains(doc.getString("userid"))) {
 
-                                    event.getChannel().sendMessage("User: " + doc.getString("username") + "\nSocial Credit: " + doc.getInteger("score") + "\n-----------\n").complete();
+                                    event.getChannel().sendMessage("User: "
+                                            + doc.getString("username")
+                                            + "\nSocial Credit: "
+                                            + doc.getInteger("score")
+                                            + "\n-----------\n").complete();
                                 }
                             }
                         }

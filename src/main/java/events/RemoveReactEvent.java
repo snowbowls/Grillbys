@@ -37,6 +37,7 @@ public class RemoveReactEvent extends ListenerAdapter {
         String username = msg.getAuthor().getName();
         String userid = msg.getAuthor().getId();
         String reactor = Objects.requireNonNull(event.getUser()).getName();
+        boolean isCustom;
 
         ConnectionString connectionString = new ConnectionString(uri);
         MongoClientSettings settings = MongoClientSettings.builder()
@@ -46,64 +47,76 @@ public class RemoveReactEvent extends ListenerAdapter {
                         .build())
                 .build();
 
+        try{
+            String s = event.getReactionEmote().getId();
+            isCustom = true;
 
-        // Trigger when message rem react +15
-        if(event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
-            try (MongoClient mongoClient = MongoClients.create(settings)) {
-                MongoDatabase database = mongoClient.getDatabase("ChillGrill");
-                MongoCollection<Document> collection = database.getCollection("socialcredit");
-                Bson projectionFields = Projections.fields(
-                        Projections.include("username", "score", "userid"),
-                        Projections.excludeId());
-                Document doc = collection.find(eq("userid", userid))
-                        .projection(projectionFields)
-                        .first();
-                if (doc == null) { // Does this ever trigger?
-                    System.out.print("NULL DOC at rem+15");
-                } else {
-                    int currVal = doc.getInteger("score");
-                    doc.append("score", currVal - 15);
-                    System.out.println("-------------------------------------------------");
-                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                    System.out.println("Reactor: " + reactor);
-                    try {
-                        Bson query = eq("userid", userid);
-                        ReplaceOptions opts = new ReplaceOptions().upsert(true);
-
-                        UpdateResult result = collection.replaceOne(query, doc, opts);
-                    } catch (MongoException me) {
-                        System.err.println("\nUnable to update due to an error: " + me);
-                    }
-                }
-            }
+        }
+        catch(Exception e){
+            isCustom = false;
         }
 
-        // Trigger when message rem react -15
-        if(event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
-            try (MongoClient mongoClient = MongoClients.create(settings)) {
-                MongoDatabase database = mongoClient.getDatabase("ChillGrill");
-                MongoCollection<Document> collection = database.getCollection("socialcredit");
-                Bson projectionFields = Projections.fields(
-                        Projections.include("username", "score", "userid"),
-                        Projections.excludeId());
-                Document doc = collection.find(eq("userid", userid))
-                        .projection(projectionFields)
-                        .first();
-                if (doc == null) { // Does this ever trigger?
-                    System.out.print("NULL DOC at rem-15");
-                } else {
-                    int currVal = doc.getInteger("score");
-                    doc.append("score", currVal + 15);
-                    System.out.println("-------------------------------------------------");
-                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                    System.out.println("Reactor: " + reactor);
-                    try {
-                        Bson query = eq("userid", userid);
-                        ReplaceOptions opts = new ReplaceOptions().upsert(true);
+        if(isCustom) {
+            {
+                // Trigger when message rem react +15
+                if (event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
+                    try (MongoClient mongoClient = MongoClients.create(settings)) {
+                        MongoDatabase database = mongoClient.getDatabase("ChillGrill");
+                        MongoCollection<Document> collection = database.getCollection("socialcredit");
+                        Bson projectionFields = Projections.fields(
+                                Projections.include("username", "score", "userid"),
+                                Projections.excludeId());
+                        Document doc = collection.find(eq("userid", userid))
+                                .projection(projectionFields)
+                                .first();
+                        if (doc == null) { // Does this ever trigger?
+                            System.out.print("NULL DOC at rem+15");
+                        } else {
+                            int currVal = doc.getInteger("score");
+                            doc.append("score", currVal - 15);
+                            System.out.println("-------------------------------------------------");
+                            System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
+                            System.out.println("Reactor: " + reactor);
+                            try {
+                                Bson query = eq("userid", userid);
+                                ReplaceOptions opts = new ReplaceOptions().upsert(true);
 
-                        UpdateResult result = collection.replaceOne(query, doc, opts);
-                    } catch (MongoException me) {
-                        System.err.println("Unable to update due to an error: " + me);
+                                UpdateResult result = collection.replaceOne(query, doc, opts);
+                            } catch (MongoException me) {
+                                System.err.println("\nUnable to update due to an error: " + me);
+                            }
+                        }
+                    }
+                }
+
+                // Trigger when message rem react -15
+                if (event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
+                    try (MongoClient mongoClient = MongoClients.create(settings)) {
+                        MongoDatabase database = mongoClient.getDatabase("ChillGrill");
+                        MongoCollection<Document> collection = database.getCollection("socialcredit");
+                        Bson projectionFields = Projections.fields(
+                                Projections.include("username", "score", "userid"),
+                                Projections.excludeId());
+                        Document doc = collection.find(eq("userid", userid))
+                                .projection(projectionFields)
+                                .first();
+                        if (doc == null) { // Does this ever trigger?
+                            System.out.print("NULL DOC at rem-15");
+                        } else {
+                            int currVal = doc.getInteger("score");
+                            doc.append("score", currVal + 15);
+                            System.out.println("-------------------------------------------------");
+                            System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
+                            System.out.println("Reactor: " + reactor);
+                            try {
+                                Bson query = eq("userid", userid);
+                                ReplaceOptions opts = new ReplaceOptions().upsert(true);
+
+                                UpdateResult result = collection.replaceOne(query, doc, opts);
+                            } catch (MongoException me) {
+                                System.err.println("Unable to update due to an error: " + me);
+                            }
+                        }
                     }
                 }
             }

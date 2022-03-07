@@ -41,6 +41,7 @@ public class AddReactEvent extends ListenerAdapter {
         String username = msg.getAuthor().getName();
         String userid = msg.getAuthor().getId();
         String reactor = Objects.requireNonNull(event.getUser()).getName();
+        boolean isCustom;
 
         String jiApprove = "zhao_xina:900118296471425124";
         String jiCondemn = "mao_zedong:934920068729536512";
@@ -52,142 +53,151 @@ public class AddReactEvent extends ListenerAdapter {
                         .version(ServerApiVersion.V1)
                         .build())
                 .build();
+        try{
+            String s = event.getReactionEmote().getId();
+            isCustom = true;
 
-
-        // ----- CREDIT SCORE -----
-
-        // Trigger when message add react +15
-        if (event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
-            try (MongoClient mongoClient = MongoClients.create(settings)) {
-
-                MongoDatabase database = mongoClient.getDatabase("ChillGrill");
-                MongoCollection<Document> collection = database.getCollection("socialcredit");
-                Bson projectionFields = Projections.fields(
-                        Projections.include("username", "score", "userid"),
-                        Projections.excludeId());
-                Document doc = collection.find(eq("userid", userid))
-                        .projection(projectionFields)
-                        .first();
-                if (doc == null) {
-
-                    try {
-                        InsertOneResult result = collection.insertOne(new Document()
-                                .append("_id", new ObjectId())
-                                .append("username", username)
-                                .append("userid", userid)
-                                .append("score", 15));
-
-                        System.out.println("Success! Inserted document id: " + result.getInsertedId() + "add15");
-                    } catch (MongoException me) {
-                        System.err.println("Unable to insert due to an error: " + me);
-                    }
-                } else {
-                    int currVal = doc.getInteger("score");
-                    doc.append("score", currVal + 15);
-                    System.out.println("-------------------------------------------------");
-                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                    System.out.println("Reactor: " + reactor + " @" + event.getChannel().getName());
-                    try {
-                        Bson query = eq("userid", userid);
-                        ReplaceOptions opts = new ReplaceOptions().upsert(true);
-
-                        UpdateResult result = collection.replaceOne(query, doc, opts);
-                    } catch (MongoException me) {
-                        System.err.println("\nUnable to update due to an error: " + me);
-                    }
-                }
-            }
+        }
+        catch(Exception e){
+            isCustom = false;
         }
 
-        // Trigger when message add react -15
-        if (event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
+        if(isCustom) {
+            // ----- CREDIT SCORE -----
 
-            try (MongoClient mongoClient = MongoClients.create(settings)) {
-                MongoDatabase database = mongoClient.getDatabase("ChillGrill");
-                MongoCollection<Document> collection = database.getCollection("socialcredit");
-                Bson projectionFields = Projections.fields(
-                        Projections.include("username", "score", "userid"),
-                        Projections.excludeId());
-                Document doc = collection.find(eq("userid", userid))
-                        .projection(projectionFields)
-                        .first();
+            // Trigger when message add react +15
+            if (event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
+                try (MongoClient mongoClient = MongoClients.create(settings)) {
 
-                if (doc == null) {
-                    try {
-                        InsertOneResult result = collection.insertOne(new Document()
-                                .append("_id", new ObjectId())
-                                .append("username", username)
-                                .append("userid", userid)
-                                .append("score", -15));
+                    MongoDatabase database = mongoClient.getDatabase("ChillGrill");
+                    MongoCollection<Document> collection = database.getCollection("socialcredit");
+                    Bson projectionFields = Projections.fields(
+                            Projections.include("username", "score", "userid"),
+                            Projections.excludeId());
+                    Document doc = collection.find(eq("userid", userid))
+                            .projection(projectionFields)
+                            .first();
+                    if (doc == null) {
 
-                        System.out.println("Success! Inserted document id: " + result.getInsertedId() + "add-15");
-                    } catch (MongoException me) {
-                        System.err.println("Unable to insert due to an error: " + me);
-                    }
-                } else {
-                    int currVal = doc.getInteger("score");
-                    doc.append("score", currVal - 15);
-                    System.out.println("-------------------------------------------------");
-                    System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                    System.out.println("Reactor: " + reactor + " @" + event.getChannel().getName());
-                    try {
-                        Bson query = eq("userid", userid);
-                        ReplaceOptions opts = new ReplaceOptions().upsert(true);
+                        try {
+                            InsertOneResult result = collection.insertOne(new Document()
+                                    .append("_id", new ObjectId())
+                                    .append("username", username)
+                                    .append("userid", userid)
+                                    .append("score", 15));
 
-                        UpdateResult result = collection.replaceOne(query, doc, opts);
-                    } catch (MongoException me) {
-                        System.err.println("Unable to update due to an error: " + me);
+                            System.out.println("Success! Inserted document id: " + result.getInsertedId() + "add15");
+                        } catch (MongoException me) {
+                            System.err.println("Unable to insert due to an error: " + me);
+                        }
+                    } else {
+                        int currVal = doc.getInteger("score");
+                        doc.append("score", currVal + 15);
+                        System.out.println("-------------------------------------------------");
+                        System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
+                        System.out.println("Reactor: " + reactor + " @" + event.getChannel().getName());
+                        try {
+                            Bson query = eq("userid", userid);
+                            ReplaceOptions opts = new ReplaceOptions().upsert(true);
+
+                            UpdateResult result = collection.replaceOne(query, doc, opts);
+                        } catch (MongoException me) {
+                            System.err.println("\nUnable to update due to an error: " + me);
+                        }
                     }
                 }
             }
-        }
 
-        // Count num of reacts for +15
-        if (event.getReactionEmote().getId().equals("900119408859578451")){
+            // Trigger when message add react -15
+            if (event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
 
-            List<MessageReaction> reactionsList = msg.getReactions();
-            List<User> users = null;
-            int i; // Num of diff reacts
+                try (MongoClient mongoClient = MongoClients.create(settings)) {
+                    MongoDatabase database = mongoClient.getDatabase("ChillGrill");
+                    MongoCollection<Document> collection = database.getCollection("socialcredit");
+                    Bson projectionFields = Projections.fields(
+                            Projections.include("username", "score", "userid"),
+                            Projections.excludeId());
+                    Document doc = collection.find(eq("userid", userid))
+                            .projection(projectionFields)
+                            .first();
 
-            for (i = 0; i < reactionsList.size(); i++) {
-                users = reactionsList.get(i).retrieveUsers().complete();
+                    if (doc == null) {
+                        try {
+                            InsertOneResult result = collection.insertOne(new Document()
+                                    .append("_id", new ObjectId())
+                                    .append("username", username)
+                                    .append("userid", userid)
+                                    .append("score", -15));
+
+                            System.out.println("Success! Inserted document id: " + result.getInsertedId() + "add-15");
+                        } catch (MongoException me) {
+                            System.err.println("Unable to insert due to an error: " + me);
+                        }
+                    } else {
+                        int currVal = doc.getInteger("score");
+                        doc.append("score", currVal - 15);
+                        System.out.println("-------------------------------------------------");
+                        System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
+                        System.out.println("Reactor: " + reactor + " @" + event.getChannel().getName());
+                        try {
+                            Bson query = eq("userid", userid);
+                            ReplaceOptions opts = new ReplaceOptions().upsert(true);
+
+                            UpdateResult result = collection.replaceOne(query, doc, opts);
+                        } catch (MongoException me) {
+                            System.err.println("Unable to update due to an error: " + me);
+                        }
+                    }
+                }
             }
 
-            assert users != null;
-            int cnt = users.size(); // Num of react
+            // Count num of reacts for +15
+            if (event.getReactionEmote().getId().equals("900119408859578451")) {
 
-            if(cnt >= 2){
-                msg.addReaction(jiApprove).queue();
+                List<MessageReaction> reactionsList = msg.getReactions();
+                List<User> users = null;
+                int i; // Num of diff reacts
+
+                for (i = 0; i < reactionsList.size(); i++) {
+                    users = reactionsList.get(i).retrieveUsers().complete();
+                }
+
+                assert users != null;
+                int cnt = users.size(); // Num of react
+
+                if (cnt >= 2) {
+                    msg.addReaction(jiApprove).queue();
+                }
             }
-        }
 
-        // Count num of reacts for -15
-        if (event.getReactionEmote().getId().equals("934919187787288597")){
+            // Count num of reacts for -15
+            if (event.getReactionEmote().getId().equals("934919187787288597")) {
 
-            List<MessageReaction> reactionsList = msg.getReactions();
-            List<User> users = null;
-            int i; // Num of diff reacts
+                List<MessageReaction> reactionsList = msg.getReactions();
+                List<User> users = null;
+                int i; // Num of diff reacts
 
-            for (i = 0; i < reactionsList.size(); i++) {
-                users = reactionsList.get(i).retrieveUsers().complete();
+                for (i = 0; i < reactionsList.size(); i++) {
+                    users = reactionsList.get(i).retrieveUsers().complete();
+                }
+
+                assert users != null;
+                int cnt = users.size(); // Num of react
+
+                if (cnt >= 2) {
+                    msg.addReaction(jiCondemn).queue();
+                }
             }
 
-            assert users != null;
-            int cnt = users.size(); // Num of react
+            // ----- OTHER -----
 
-            if(cnt >= 2){
-                msg.addReaction(jiCondemn).queue();
+            if (event.getReactionEmote().getId().equals("887861940012085288")) {
+                msg.addReaction("soy_point:887860865439789086").queue();
             }
-        }
 
-        // ----- OTHER -----
-
-        if(event.getReactionEmote().getId().equals("887861940012085288")){
-            msg.addReaction("soy_point:887860865439789086").queue();
-        }
-
-        if(event.getReactionEmote().getId().equals("802264386026340403")){
-            msg.addReaction("sus:802264386026340403").queue();
+            if (event.getReactionEmote().getId().equals("802264386026340403")) {
+                msg.addReaction("sus:802264386026340403").queue();
+            }
         }
 
     }
