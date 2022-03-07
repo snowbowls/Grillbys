@@ -1,6 +1,6 @@
 package events;
 
-import com.mongodb.MongoException;
+import com.mongodb.*;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -45,11 +45,20 @@ public class AddReactEvent extends ListenerAdapter {
         String jiApprove = "zhao_xina:900118296471425124";
         String jiCondemn = "mao_zedong:934920068729536512";
 
+        ConnectionString connectionString = new ConnectionString(uri);
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connectionString)
+                .serverApi(ServerApi.builder()
+                        .version(ServerApiVersion.V1)
+                        .build())
+                .build();
+
+
         // ----- CREDIT SCORE -----
 
         // Trigger when message add react +15
         if (event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
-            try (MongoClient mongoClient = MongoClients.create(uri)) {
+            try (MongoClient mongoClient = MongoClients.create(settings)) {
 
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                 MongoCollection<Document> collection = database.getCollection("socialcredit");
@@ -77,7 +86,7 @@ public class AddReactEvent extends ListenerAdapter {
                     doc.append("score", currVal + 15);
                     System.out.println("-------------------------------------------------");
                     System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                    System.out.println("Reactor: " + reactor);
+                    System.out.println("Reactor: " + reactor + " @" + event.getChannel().getName());
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);
@@ -93,7 +102,7 @@ public class AddReactEvent extends ListenerAdapter {
         // Trigger when message add react -15
         if (event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
 
-            try (MongoClient mongoClient = MongoClients.create(uri)) {
+            try (MongoClient mongoClient = MongoClients.create(settings)) {
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                 MongoCollection<Document> collection = database.getCollection("socialcredit");
                 Bson projectionFields = Projections.fields(
@@ -120,7 +129,7 @@ public class AddReactEvent extends ListenerAdapter {
                     doc.append("score", currVal - 15);
                     System.out.println("-------------------------------------------------");
                     System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                    System.out.println("Reactor: " + reactor);
+                    System.out.println("Reactor: " + reactor + " @" + event.getChannel().getName());
                     try {
                         Bson query = eq("userid", userid);
                         ReplaceOptions opts = new ReplaceOptions().upsert(true);

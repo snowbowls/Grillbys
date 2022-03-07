@@ -1,6 +1,6 @@
 package events;
 
-import com.mongodb.MongoException;
+import com.mongodb.*;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -38,10 +38,18 @@ public class RemoveReactEvent extends ListenerAdapter {
         String userid = msg.getAuthor().getId();
         String reactor = Objects.requireNonNull(event.getUser()).getName();
 
+        ConnectionString connectionString = new ConnectionString(uri);
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connectionString)
+                .serverApi(ServerApi.builder()
+                        .version(ServerApiVersion.V1)
+                        .build())
+                .build();
+
 
         // Trigger when message rem react +15
         if(event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
-            try (MongoClient mongoClient = MongoClients.create(uri)) {
+            try (MongoClient mongoClient = MongoClients.create(settings)) {
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                 MongoCollection<Document> collection = database.getCollection("socialcredit");
                 Bson projectionFields = Projections.fields(
@@ -72,7 +80,7 @@ public class RemoveReactEvent extends ListenerAdapter {
 
         // Trigger when message rem react -15
         if(event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
-            try (MongoClient mongoClient = MongoClients.create(uri)) {
+            try (MongoClient mongoClient = MongoClients.create(settings)) {
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                 MongoCollection<Document> collection = database.getCollection("socialcredit");
                 Bson projectionFields = Projections.fields(

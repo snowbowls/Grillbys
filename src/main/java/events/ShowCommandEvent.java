@@ -1,6 +1,6 @@
 package events;
 
-import com.mongodb.MongoException;
+import com.mongodb.*;
 import com.mongodb.client.*;
 import com.mongodb.client.model.Projections;
 import com.mongodb.client.model.Sorts;
@@ -28,6 +28,16 @@ public class ShowCommandEvent extends ListenerAdapter {
         List<Member> users = event.getGuild().getMembers();
         List<String> usersId = new ArrayList<>();
 
+        ConnectionString connectionString = new ConnectionString(uri);
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connectionString)
+                .serverApi(ServerApi.builder()
+                        .version(ServerApiVersion.V1)
+                        .build())
+                .build();
+        for (Member u: users){
+            System.out.println(u.getEffectiveName());
+        }
         for (Member u : users) {
             usersId.add(u.getId());
         }
@@ -35,8 +45,8 @@ public class ShowCommandEvent extends ListenerAdapter {
         String[] msg = event.getMessage().getContentRaw().split(" ");
         if(msg[0].equalsIgnoreCase("!show")){
             if(msg[1].equalsIgnoreCase("mine")){
-                System.out.println("!show mine");
-                try (MongoClient mongoClient = MongoClients.create(uri)) {
+                System.out.println("Command: !show mine -" + event.getMessage().getAuthor().getName() + " @" + event.getChannel().getName());
+                try (MongoClient mongoClient = MongoClients.create(settings)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {
@@ -57,8 +67,8 @@ public class ShowCommandEvent extends ListenerAdapter {
                 }
             }
             else if (msg[1].equalsIgnoreCase("all")){
-                System.out.println("!show all");
-                try (MongoClient mongoClient = MongoClients.create(uri)) {
+                System.out.println("Command !show all -" + event.getMessage().getAuthor().getName() + " @" + event.getChannel().getName());
+                try (MongoClient mongoClient = MongoClients.create(settings)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {
@@ -84,7 +94,7 @@ public class ShowCommandEvent extends ListenerAdapter {
             }
             else if (msg[1].substring(0,1).equalsIgnoreCase("<")){
                 userid = event.getMessage().getContentRaw().substring(9,event.getMessage().getContentRaw().length()-1);
-                try (MongoClient mongoClient = MongoClients.create(uri)) {
+                try (MongoClient mongoClient = MongoClients.create(settings)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {
@@ -107,7 +117,7 @@ public class ShowCommandEvent extends ListenerAdapter {
             else{
                 String username = event.getMessage().getContentRaw().substring(6);
                 System.out.println(username);
-                try (MongoClient mongoClient = MongoClients.create(uri)) {
+                try (MongoClient mongoClient = MongoClients.create(settings)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {
