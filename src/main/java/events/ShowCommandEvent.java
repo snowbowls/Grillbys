@@ -25,6 +25,7 @@ public class ShowCommandEvent extends ListenerAdapter {
         //String username = event.getAuthor().getName();
         String userid = event.getMessage().getAuthor().getId();
 
+        event.getGuild().loadMembers();
         List<Member> users = event.getGuild().getMembers();
         List<String> usersId = new ArrayList<>();
 
@@ -35,9 +36,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                         .version(ServerApiVersion.V1)
                         .build())
                 .build();
-        for (Member u: users){
-            System.out.println(u.getEffectiveName());
-        }
+
         for (Member u : users) {
             usersId.add(u.getId());
         }
