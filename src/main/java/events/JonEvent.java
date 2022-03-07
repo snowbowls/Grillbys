@@ -2,39 +2,49 @@ package events;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import java.io.FileReader;
 import java.util.ArrayList;
 
 public class JonEvent extends ListenerAdapter {
-    public void onMessageReceived(MessageReceivedEvent event){
+    public void onMessageReceived(MessageReceivedEvent event) {
+
         String msg = event.getMessage().getContentRaw().toLowerCase();
 
         final Boolean[] trig = {false};
-        ArrayList<String> triggersDBS = new ArrayList<>();
-        triggersDBS.add("dbs");
-        triggersDBS.add("dragonball");
-        triggersDBS.add("goku");
-        triggersDBS.add("bejita");
 
-        triggersDBS.forEach((x) -> {
-            if(msg.contains(x)){
+        JSONParser parser = new JSONParser();
+        JSONArray dbTriggers = null;
+        try {
+            Object obj = parser.parse(new FileReader("keywords.json"));
+            JSONObject jsonObject = (JSONObject) obj;
+            dbTriggers = (JSONArray) jsonObject.get("dragonball");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assert dbTriggers != null;
+        for (Object key : dbTriggers) {
+            if (msg.contains(key.toString())) {
                 trig[0] = true;
             }
-        });
+        }
 
-        if(trig[0]){
+        if (trig[0]) {
             event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
 
             event.getMessage().addReaction("15_neg:934919187787288597").queue();
             System.out.println(msg);
         }
 
-        if(msg.contains("jiren") && !trig[0]){
-            event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
+        if (msg.contains("jiren") && !trig[0]) {
+            //event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
             System.out.println(msg);
         }
 
-        if(msg.contains("moe") && !trig[0]){
+        if (msg.contains("moe") && !trig[0]) {
             //event.getChannel().sendMessage("moe").queue();
             System.out.println(msg);
         }
@@ -48,22 +58,22 @@ public class JonEvent extends ListenerAdapter {
         triggersRDM.add("imposter");
 
         triggersRDM.forEach((x) -> {
-            if(msg.contains(x)){
+            if (msg.contains(x)) {
                 trig2[0] = true;
             }
         });
 
-        if(trig2[0]) {
+        if (trig2[0]) {
             event.getMessage().addReaction("amongass:854818205624827935").queue();
             System.out.println(msg);
         }
 
-        if(msg.contains("grill")){
+        if (msg.contains("grill")) {
             event.getMessage().addReaction("justagriller:816352491386044426").queue();
             System.out.println(msg);
         }
 
-        if(msg.equals("n")){
+        if (msg.equals("n")) {
             event.getMessage().addReaction("disintegrate:829491387824865321").queue();
             event.getMessage().addReaction("touch_grass:936036425789493269").queue();
             event.getMessage().addReaction("soyjak:921475501023977573").queue();
@@ -75,32 +85,30 @@ public class JonEvent extends ListenerAdapter {
             System.out.println(msg);
         }
 
-        if(msg.contains("cum")){
+        if (msg.contains("cum")) {
             event.getMessage().addReaction("gokek:801618290577113109").queue();
             System.out.println(msg);
 
         }
 
-        if(msg.contains("foot") || msg.contains("feet")){
+        if (msg.contains("foot") || msg.contains("feet")) {
             event.getMessage().addReaction("Hyper_Engineer:666502984846409758").queue();
             System.out.println(msg);
         }
 
-        if(msg.contains("@everyone")){
+        if (msg.contains("@everyone")) {
             event.getChannel().sendMessage("wow ur so cool and brave").queue();
             System.out.println(msg);
         }
 
-        if(msg.contains("alexa") && (msg.contains("search") || msg.contains("play"))){
+        if (msg.contains("alexa") && (msg.contains("search") || msg.contains("play"))) {
             event.getChannel().sendMessage("do it yourself").queue();
             System.out.println(msg);
         }
 
-        if(msg.contains("sex")){
+        if (msg.contains("sex")) {
             event.getMessage().addReaction("ned_leeds:936792444895363072").queue();
             System.out.println(msg);
         }
-
-
     }
 }
