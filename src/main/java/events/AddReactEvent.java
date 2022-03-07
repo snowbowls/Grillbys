@@ -31,7 +31,6 @@ public class AddReactEvent extends ListenerAdapter {
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
     LocalDateTime now = LocalDateTime.now();
 
-    //public static final String uri = System.getenv("URI");
     public static Dotenv dotenv = Dotenv.load();
     String uri = dotenv.get("URI");
 
