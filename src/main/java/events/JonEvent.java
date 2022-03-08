@@ -47,10 +47,7 @@ public class JonEvent extends ListenerAdapter {
         }
 
         // Delete me
-        if (msg.contains("jiren") && !trig[0]) {
-            //event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
-            System.out.println(msg);
-        }
+        //event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
 
         final Boolean[] trig2 = {false};
         ArrayList<String> triggersRDM = new ArrayList<>();

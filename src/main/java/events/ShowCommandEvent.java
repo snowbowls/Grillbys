@@ -53,7 +53,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                                 .projection(projectionFields)
                                 .first();
                         if (doc == null) {
-                            event.getChannel().sendMessage("idk who you are, go get some credit then come back");
+                            event.getChannel().sendMessage("idk who you are, go get some credit then come back").queue();
                             System.err.println("DNE - " + event.getMessage().getAuthor().getName() + " @" + event.getChannel().getName());
                         } else {
                             event.getChannel().sendMessage("User: " + doc.getString("username") + "\nSocial Credit: " + doc.getInteger("score")).complete();
@@ -77,9 +77,10 @@ public class ShowCommandEvent extends ListenerAdapter {
                 StringBuilder sbUser = new StringBuilder();
                 StringBuilder sbCredit = new StringBuilder();
                 EmbedBuilder eb = new EmbedBuilder();
+                eb.setThumbnail("https://raw.githubusercontent.com/snowbowls/Zaba/master/images/icon.PNG");
                 eb.setTitle("社会信用体系", null);
                 eb.setColor(new Color(114, 41, 54));
-                eb.setImage("https://github.com/zekroTJA/DiscordBot/blob/master/.websrc/logo%20-%20title.png");
+
 
 
 
@@ -102,7 +103,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                                 if (usersId.contains(doc.getString("userid"))) {
 
                                     currUsers.add(doc.getString("username") + "\n");
-                                    currCredit.add(".\u3000" + doc.getInteger("score").toString() + "\n");
+                                    currCredit.add(".\u3000\u3000\u3000" + doc.getInteger("score").toString() + "\n");
                                 }
                             }
                             for(String s : currUsers)
@@ -110,8 +111,8 @@ public class ShowCommandEvent extends ListenerAdapter {
                             for(String s: currCredit)
                                 sbCredit.append(s);
 
-                            eb.addField("Username", sbUser.toString(), true);
-                            eb.addField("Social Credit", sbCredit.toString(), true);
+                            eb.addField("Username  统一社会信用代码 ", sbUser.toString(), true);
+                            eb.addField("Social Credit 社会信用评分", sbCredit.toString(), true);
                             event.getChannel().sendMessage(eb.build()).queue();
                         }
                     } catch (MongoException me) {

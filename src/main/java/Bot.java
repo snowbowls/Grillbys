@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 public class Bot{
 
-   // public static final String TOKEN = System.getenv("TOKEN");
     public static Dotenv dotenv = Dotenv.load();
 
     public static void main(String[] args) throws Exception {
@@ -24,6 +23,7 @@ public class Bot{
                 .addEventListeners(new RemoveReactEvent())
                 .addEventListeners(new ShowCommandEvent())
                 // Other Events
+                //.addEventListeners(new CCPEvent())
                 .addEventListeners(new HelpEvent())
                 .addEventListeners(new JonEvent())
                 .build();

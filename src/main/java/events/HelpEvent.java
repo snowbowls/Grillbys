@@ -42,7 +42,7 @@ public class HelpEvent extends ListenerAdapter {
             }
         }
         else if(event.getMessage().getContentRaw().equals("!explain") || event.getMessage().getContentRaw().equals("tell 'em zaba")){
-                event.getChannel().sendMessage("多黨制\t\t**Social Credit - How to preform your 中国共产党 Duty**"
+                event.getChannel().sendMessage("多黨制\t\t**Social Credit - How to perform your 中国共产党 Duty**"
                     + "\n*李洪志*\t   ● React to a comment with <:15_plus:900119408859578451> or <:15_minus:934919187787288597> to contribute to the author's social credit"
                     + "\n*六四天*\t   ● If the author and the reactor are the same user, their social credit is left unchanged"
                     + "\n*劉曉波*\t   ● If the react is removed, the author's social credit will update accordingly").queue();
