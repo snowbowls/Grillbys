@@ -16,35 +16,35 @@ public class JonEvent extends ListenerAdapter {
 
         final Boolean[] trig = {false};
 
-        JSONParser parser = new JSONParser();
-        JSONArray dbTriggers = null;
+//        JSONParser parser = new JSONParser();
+//        JSONArray dbTriggers = null;
 
-        // Load trigger words for dragonball stuff from json
-        try {
-            Object obj = parser.parse(new FileReader("keywords.json"));
-            JSONObject jsonObject = (JSONObject) obj;
-            dbTriggers = (JSONArray) jsonObject.get("dragonball");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        // Checking msg for triggers
-        assert dbTriggers != null;
-        for (Object key : dbTriggers) {
-            if (msg.contains(key.toString())) {
-                trig[0] = true;
-            }
-        }
-
-        // triggered
-        if (trig[0]) {
-            event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
-
-            if(!event.getAuthor().getId().equals("222163619125788682")) {
-                event.getMessage().addReaction("15_neg:934919187787288597").queue();
-            }
-            System.out.println(msg);
-        }
+//        // Load trigger words for dragonball stuff from json
+//        try {
+//            Object obj = parser.parse(new FileReader("keywords.json"));
+//            JSONObject jsonObject = (JSONObject) obj;
+//            dbTriggers = (JSONArray) jsonObject.get("dragonball");
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//
+//        // Checking msg for triggers
+//        assert dbTriggers != null;
+//        for (Object key : dbTriggers) {
+//            if (msg.contains(key.toString())) {
+//                trig[0] = true;
+//            }
+//        }
+//
+//        // triggered
+//        if (trig[0]) {
+//            event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
+//
+//            if(!event.getAuthor().getId().equals("222163619125788682")) {
+//                event.getMessage().addReaction("15_neg:934919187787288597").queue();
+//            }
+//            System.out.println(msg);
+//        }
 
         // Delete me
         //event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();

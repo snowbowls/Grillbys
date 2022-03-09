@@ -23,7 +23,7 @@ public class Bot{
                 .addEventListeners(new RemoveReactEvent())
                 .addEventListeners(new ShowCommandEvent())
                 // Other Events
-                //.addEventListeners(new CCPEvent())
+                .addEventListeners(new CCPEvent())
                 .addEventListeners(new HelpEvent())
                 .addEventListeners(new JonEvent())
                 .build();
