@@ -63,9 +63,9 @@ public class AddReactEvent extends ListenerAdapter {
 
         if(isCustom) {
             // ----- CREDIT SCORE -----
-
+            String readId = event.getReactionEmote().getId();
             // Trigger when message add react +15
-            if (event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
+            if (readId.equals("900119408859578451") && !username.equals(reactor)) {
                 try (MongoClient mongoClient = MongoClients.create(settings)) {
 
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
@@ -108,7 +108,7 @@ public class AddReactEvent extends ListenerAdapter {
             }
 
             // Trigger when message add react -15
-            if (event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
+            if (readId.equals("934919187787288597") && !username.equals(reactor)) {
 
                 try (MongoClient mongoClient = MongoClients.create(settings)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
@@ -151,7 +151,7 @@ public class AddReactEvent extends ListenerAdapter {
             }
 
             // Count num of reacts for +15
-            if (event.getReactionEmote().getId().equals("900119408859578451")) {
+            if (readId.equals("900119408859578451")) {
 
                 List<MessageReaction> reactionsList = msg.getReactions();
                 List<User> users = null;
@@ -170,7 +170,7 @@ public class AddReactEvent extends ListenerAdapter {
             }
 
             // Count num of reacts for -15
-            if (event.getReactionEmote().getId().equals("934919187787288597")) {
+            if (readId.equals("934919187787288597")) {
 
                 List<MessageReaction> reactionsList = msg.getReactions();
                 List<User> users = null;
@@ -190,11 +190,11 @@ public class AddReactEvent extends ListenerAdapter {
 
             // ----- OTHER -----
 
-            if (event.getReactionEmote().getId().equals("887861940012085288")) {
+            if (readId.equals("887861940012085288")) {
                 msg.addReaction("soy_point:887860865439789086").queue();
             }
 
-            if (event.getReactionEmote().getId().equals("802264386026340403")) {
+            if (readId.equals("802264386026340403")) {
                 msg.addReaction("sus:802264386026340403").queue();
             }
         }

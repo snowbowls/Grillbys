@@ -16,56 +16,47 @@ public class JonEvent extends ListenerAdapter {
 
         final Boolean[] trig = {false};
 
-//        JSONParser parser = new JSONParser();
-//        JSONArray dbTriggers = null;
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = null;
+        JSONArray triggers;
 
-//        // Load trigger words for dragonball stuff from json
-//        try {
-//            Object obj = parser.parse(new FileReader("keywords.json"));
-//            JSONObject jsonObject = (JSONObject) obj;
-//            dbTriggers = (JSONArray) jsonObject.get("dragonball");
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//
-//        // Checking msg for triggers
-//        assert dbTriggers != null;
-//        for (Object key : dbTriggers) {
-//            if (msg.contains(key.toString())) {
-//                trig[0] = true;
-//            }
-//        }
-//
-//        // triggered
-//        if (trig[0]) {
-//            event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
-//
-//            if(!event.getAuthor().getId().equals("222163619125788682")) {
-//                event.getMessage().addReaction("15_neg:934919187787288597").queue();
-//            }
-//            System.out.println(msg);
-//        }
+        // Load trigger words for dragonball stuff from json
+        try {
+            Object obj = parser.parse(new FileReader("keywords.json"));
+            jsonObject = (JSONObject) obj;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assert jsonObject != null;
+        triggers = (JSONArray) jsonObject.get("dragonball");
+        // Checking msg for triggers
+        assert triggers != null;
+        for (Object key : triggers) {
+            if (msg.contains(key.toString())) {
+                trig[0] = true;
+            }
+        }
+
+        // triggered
+        if (trig[0]) {
+            event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
+
+            if(!event.getAuthor().getId().equals("222163619125788682")) {
+                event.getMessage().addReaction("15_neg:934919187787288597").queue();
+            }
+            System.out.println(msg);
+        }
 
         // Delete me
         //event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
 
-        final Boolean[] trig2 = {false};
-        ArrayList<String> triggersRDM = new ArrayList<>();
-        triggersRDM.add("sus");
-        triggersRDM.add("among");
-        triggersRDM.add("amungus");
-        triggersRDM.add("amogus");
-        triggersRDM.add("imposter");
-
-        triggersRDM.forEach((x) -> {
-            if (msg.contains(x)) {
-                trig2[0] = true;
+        triggers = (JSONArray) jsonObject.get("sus");
+        for (Object key : triggers) {
+            if (msg.contains(key.toString())) {
+                event.getMessage().addReaction("amongass:854818205624827935").queue();
+                return;
             }
-        });
-
-        if (trig2[0]) {
-            event.getMessage().addReaction("amongass:854818205624827935").queue();
-            System.out.println(msg);
         }
 
         if (msg.contains("grill")) {
@@ -85,6 +76,7 @@ public class JonEvent extends ListenerAdapter {
                 event.getMessage().addReaction("15_neg:934919187787288597").queue();
             }
             System.out.println(msg);
+            return;
         }
 
         if (msg.contains("cum")) {
@@ -108,8 +100,8 @@ public class JonEvent extends ListenerAdapter {
             System.out.println(msg);
         }
 
-        if (msg.contains("sex")) {
-            event.getMessage().addReaction("ned_leeds:936792444895363072").queue();
+        if (msg.contains("crab")) {
+            event.getMessage().addReaction("Crab_Rave:666502984976564224> ").queue();
             System.out.println(msg);
         }
     }

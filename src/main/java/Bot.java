@@ -24,7 +24,7 @@ public class Bot{
                 .addEventListeners(new ShowCommandEvent())
                 // Other Events
                 .addEventListeners(new CCPEvent())
-                .addEventListeners(new HelpEvent())
+                .addEventListeners(new GenResponseEvent())
                 .addEventListeners(new JonEvent())
                 .build();
     }
