@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -28,15 +29,16 @@ public class ZabaEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw().toLowerCase();
     }
+    // Scheduler
     public void onReady(@NotNull ReadyEvent event) {
 
         // get the current ZonedDateTime of your TimeZone
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
 
-        // set the ZonedDateTime of the first lesson at 8:05
+        // set the ZonedDateTime of the first lesson at x:xx
         ZonedDateTime nextFirstLesson = now.withHour(10).withMinute(23).withSecond(30);
 
-        // if it's already past the time (in this case 8:05) the first lesson will be scheduled for the next day
+        // if it's already past the time (in this case x:xx) the first lesson will be scheduled for the next day
         if (now.compareTo(nextFirstLesson) > 0) {
             nextFirstLesson = nextFirstLesson.plusDays(1);
         }
@@ -49,16 +51,15 @@ public class ZabaEvent extends ListenerAdapter {
         // schedules the reminder at a fixed rate of one day
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
         schedulerFirstLesson.scheduleAtFixedRate(() -> {
-                    // send a message
-        JDA jda = event.getJDA();
-        moodPosting(jda);
-
-
+                    // execute
+                    JDA jda = event.getJDA();
+                    moodPosting(jda);
                 },
                 initialDelayFirstLesson,
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS);
     }
+
     public void moodPosting(JDA jda){
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
@@ -84,7 +85,7 @@ public class ZabaEvent extends ListenerAdapter {
         Guild guild = jda.getGuildById("944254135476305980");
 
         assert guild != null;
-        guild.getDefaultChannel().sendMessage(key).addFile(new File("videos/" + mood.get(key).toString())).queue();
+        Objects.requireNonNull(guild.getDefaultChannel()).sendMessage(key).addFile(new File("videos/" + mood.get(key).toString())).queue();
     }
     public void birthdayPosting(){}
     public void fridayPosting(){}
