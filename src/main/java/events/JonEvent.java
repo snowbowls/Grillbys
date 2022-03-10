@@ -8,19 +8,19 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 public class JonEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
 
         String msg = event.getMessage().getContentRaw().toLowerCase();
 
-        final Boolean[] trig = {false};
-
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
         JSONArray triggers;
 
-        // Load trigger words for dragonball stuff from json
+        // Load JSON
         try {
             Object obj = parser.parse(new FileReader("keywords.json"));
             jsonObject = (JSONObject) obj;
@@ -29,28 +29,21 @@ public class JonEvent extends ListenerAdapter {
             e.printStackTrace();
         }
         assert jsonObject != null;
+
+        // Dragonball triggers
         triggers = (JSONArray) jsonObject.get("dragonball");
-        // Checking msg for triggers
-        assert triggers != null;
         for (Object key : triggers) {
             if (msg.contains(key.toString())) {
-                trig[0] = true;
+                event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
+
+                if(event.getAuthor().getId().equals("222163619125788682")) {
+                    event.getMessage().addReaction("15_neg:934919187787288597").queue();
+                }
+                System.out.println(msg);
             }
         }
 
-        // triggered
-        if (trig[0]) {
-            event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
-
-            if(!event.getAuthor().getId().equals("222163619125788682")) {
-                event.getMessage().addReaction("15_neg:934919187787288597").queue();
-            }
-            System.out.println(msg);
-        }
-
-        // Delete me
-        //event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
-
+        // Sus triggers
         triggers = (JSONArray) jsonObject.get("sus");
         for (Object key : triggers) {
             if (msg.contains(key.toString())) {
@@ -91,12 +84,12 @@ public class JonEvent extends ListenerAdapter {
         }
 
         if (msg.contains("@everyone")) {
-            event.getChannel().sendMessage("wow ur so cool and brave").queue();
+            event.getChannel().sendMessage("https://media.discordapp.net/attachments/944254315630035005/951189791691669534/unknown.png").queue();
             System.out.println(msg);
         }
 
-        if (msg.contains("alexa") && (msg.contains("search") || msg.contains("play"))) {
-            event.getChannel().sendMessage("do it yourself").queue();
+        if (msg.contains("busta")) {
+            event.getMessage().addReaction("pet_busta:950885255202615316").queue();
             System.out.println(msg);
         }
 
@@ -104,5 +97,8 @@ public class JonEvent extends ListenerAdapter {
             event.getMessage().addReaction("Crab_Rave:666502984976564224> ").queue();
             System.out.println(msg);
         }
+
+        // Delete me
+        //event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
     }
 }

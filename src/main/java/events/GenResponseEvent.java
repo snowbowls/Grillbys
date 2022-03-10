@@ -32,7 +32,7 @@ public class GenResponseEvent extends ListenerAdapter {
             JSONParser parser = new JSONParser();
             JSONObject gen = null;
             JSONObject jsonObject;
-
+            
             try {
                 Object obj = parser.parse(new FileReader("keywords.json"));
                 jsonObject = (JSONObject) obj;
