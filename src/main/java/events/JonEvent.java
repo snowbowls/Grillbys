@@ -48,6 +48,7 @@ public class JonEvent extends ListenerAdapter {
         for (Object key : triggers) {
             if (msg.contains(key.toString())) {
                 event.getMessage().addReaction("amongass:854818205624827935").queue();
+                System.out.println(msg);
                 return;
             }
         }
