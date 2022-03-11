@@ -29,22 +29,22 @@ public class ZabaEvent extends ListenerAdapter {
         String msg = event.getMessage().getContentRaw().toLowerCase();
 
         if(msg.equals("echo")){
-            JSONParser parser = new JSONParser();
-            JSONObject test = null;
-            JSONObject jsonObject;
-            try {
-                Object obj = parser.parse(new FileReader("keywords.json"));
-                jsonObject = (JSONObject) obj;
-                test = (JSONObject) jsonObject.get("test");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            assert test != null;
-            Set<String> keys = test.keySet();
-            for (String f : keys) {
-                System.out.println(f);
-            }
+//            JSONParser parser = new JSONParser();
+//            JSONObject test = null;
+//            JSONObject jsonObject;
+//            try {
+//                Object obj = parser.parse(new FileReader("keywords.json"));
+//                jsonObject = (JSONObject) obj;
+//                test = (JSONObject) jsonObject.get("test");
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//
+//            assert test != null;
+//            Set<String> keys = test.keySet();
+//            for (String f : keys) {
+//                System.out.println(f);
+//            }
         }
     }
     // Scheduler
@@ -109,8 +109,8 @@ public class ZabaEvent extends ListenerAdapter {
         String meme= friday.get(rng).toString();
 
         if(Math.random() < .99) {
-            Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme.toString())).queue();
-            Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme.toString())).queue();
+            Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme.toString())).queue();
+            //Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme.toString())).queue();
             System.out.println("------------------- Friday: " + meme.toString());
         }
         else{
@@ -164,7 +164,7 @@ public class ZabaEvent extends ListenerAdapter {
         Guild guild = jda.getGuildById("816125354875944960");
         assert guild != null;
         if(Math.random() < .15) {
-            Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nToday's mood is: **" + key + "**").addFile(new File("videos/moods/" + mood.get(key).toString())).queue();
+            Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage("Behold, everyone! \nToday's mood is: **" + key + "**").addFile(new File("videos/moods/" + mood.get(key).toString())).queue();
             System.out.println("------------------- Mood: " + key);
         }
         else{

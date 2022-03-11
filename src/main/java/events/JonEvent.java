@@ -89,6 +89,10 @@ public class JonEvent extends ListenerAdapter {
             event.getChannel().sendMessage("https://media.discordapp.net/attachments/944254315630035005/951189791691669534/unknown.png").queue();
             System.out.println(msg);
         }
+        if (msg.contains("@zaba")) {
+            event.getMessage().addReaction("rdj:860593603033432064").queue();
+            System.out.println(msg);
+        }
 
         if (msg.contains("busta")) {
             event.getMessage().addReaction("pet_busta:950885255202615316").queue();
