@@ -40,6 +40,7 @@ public class JonEvent extends ListenerAdapter {
                     event.getMessage().addReaction("15_neg:934919187787288597").queue();
                 }
                 System.out.println(msg);
+                return;
             }
         }
 
