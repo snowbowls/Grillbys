@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.io.File;
 import java.io.FileReader;
 
 public class GenResponseEvent extends ListenerAdapter {
@@ -32,12 +33,13 @@ public class GenResponseEvent extends ListenerAdapter {
             JSONParser parser = new JSONParser();
             JSONObject gen = null;
             JSONObject genCom = null;
-            JSONObject jsonObject;
+            JSONObject jsonObject = null;
             
             try {
                 Object obj = parser.parse(new FileReader("keywords.json"));
                 jsonObject = (JSONObject) obj;
                 gen = (JSONObject) jsonObject.get("general");
+                genCom = (JSONObject) jsonObject.get("generalComplex");
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -50,6 +52,20 @@ public class GenResponseEvent extends ListenerAdapter {
                 if (msg.contains(key)) {
                     System.out.println(key + " @" + event.getChannel().getName());
                     event.getChannel().sendMessage(genScan.get(key).toString()).queue();
+                }
+            }
+
+            assert genCom != null;
+            for (int i = 1; i <= genCom.size(); i++){
+                JSONObject genScan = (JSONObject) genCom.get(String.valueOf(i));
+                String str = genScan.keySet().toString();
+                String key = str.substring(1, str.length() - 1);
+                if (msg.contains(key)) {
+                    JSONObject responses = (JSONObject) jsonObject.get(genScan.get(key));
+                    int rand = (int)(Math.random() * responses.size()) + 1;
+                    String meme =  responses.get(String.valueOf(rand)).toString();
+                    System.out.println(key + " @" + event.getChannel().getName());
+                    event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
                 }
             }
         }
