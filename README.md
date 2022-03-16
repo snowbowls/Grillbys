@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/snowbowls/Zaba">
-    <img src="https://admin.itsnicethat.com/images/KTIOGW3nA8hxdTHVyLJgFAl4y4k=/133060/format-webp%7Cwidth-1440/53a0471d5c3e3c74c1003182.jpg" alt="Logo" width="180" height="180">
+    <img src="images/zaba.png" alt="Logo" width="180" height="180">
   </a>
 
   <h3 align="center">Zaba the Discord Bot</h3>
