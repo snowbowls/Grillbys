@@ -62,10 +62,19 @@ public class GenResponseEvent extends ListenerAdapter {
                 String key = str.substring(1, str.length() - 1);
                 if (msg.contains(key)) {
                     JSONObject responses = (JSONObject) jsonObject.get(genScan.get(key));
-                    int rand = (int)(Math.random() * responses.size()) + 1;
+                    int rand = (int)((Math.random() * (responses.size() - 1)) + 1);
                     String meme =  responses.get(String.valueOf(rand)).toString();
-                    System.out.println(key + " @" + event.getChannel().getName());
-                    event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
+
+                    if(key.equals("uwu")) {
+                        if (Math.random() > .65) {
+                            System.out.println(key + " @" + event.getChannel().getName());
+                            event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
+                        }
+                    }
+                    else {
+                        System.out.println(key + " @" + event.getChannel().getName());
+                        event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
+                    }
                 }
             }
         }
