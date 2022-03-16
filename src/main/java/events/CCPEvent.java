@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 public class CCPEvent extends ListenerAdapter {
+    // Might combine CCPEvent with the Credit Score classes
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
 

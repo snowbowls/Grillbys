@@ -22,9 +22,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class ZabaEvent extends ListenerAdapter {
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-    LocalDateTime now = LocalDateTime.now();
-
+    // ZabaEvents are for practical functions or utilities that the bot can execute in the guild
     public void onMessageReceived(MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw().toLowerCase();
 
@@ -58,7 +56,7 @@ public class ZabaEvent extends ListenerAdapter {
         Date aDate = new Date();
         Calendar with = Calendar.getInstance();
         with.setTime(aDate);
-        Map<Integer, Integer> dayToDelay = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> dayToDelay = new HashMap<>();
         dayToDelay.put(Calendar.FRIDAY, 6);
         dayToDelay.put(Calendar.SATURDAY, 5);
         dayToDelay.put(Calendar.SUNDAY, 4);
@@ -70,8 +68,8 @@ public class ZabaEvent extends ListenerAdapter {
         int hour = with.get(Calendar.HOUR_OF_DAY);
         int second = with.get(Calendar.SECOND);
         int delayInDays = dayToDelay.get(dayOfWeek);
-        int delayInHours = 0;
-        int delayInSeconds = 0;
+        int delayInHours ;
+        int delayInSeconds ;
         if(delayInDays == 6 && hour<scheduleHour){
             delayInHours = scheduleHour - hour;
             delayInSeconds = delayInHours*60 - second;
@@ -80,13 +78,11 @@ public class ZabaEvent extends ListenerAdapter {
             delayInSeconds = delayInHours*60 - second;
         }
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
-        scheduler.scheduleAtFixedRate(new Runnable() {
-            public void run() {
-                try {
-                    fridayPosting(jda);
-                } catch (Exception ex) {
-                    ex.printStackTrace(); // or loggger would be better
-                }
+        scheduler.scheduleAtFixedRate(() -> {
+            try {
+                fridayPosting(jda);
+            } catch (Exception ex) {
+                ex.printStackTrace(); // or loggger would be better
             }
         }, delayInSeconds, 604800, TimeUnit.SECONDS);
     }
@@ -109,9 +105,9 @@ public class ZabaEvent extends ListenerAdapter {
         String meme= friday.get(rng).toString();
 
         if(Math.random() < .99) {
-            Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme.toString())).queue();
-            //Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme.toString())).queue();
-            System.out.println("------------------- Friday: " + meme.toString());
+            Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
+            Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
+            System.out.println("------------------- Friday: " + meme);
         }
         else{
             System.out.println("------------------- No Friday for today");
@@ -132,9 +128,7 @@ public class ZabaEvent extends ListenerAdapter {
         long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
         // schedules the reminder at a fixed rate of one day
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
-        schedulerFirstLesson.scheduleAtFixedRate(() -> {
-                    moodPosting(jda);
-                },
+        schedulerFirstLesson.scheduleAtFixedRate(() -> moodPosting(jda),
                 initialDelayFirstLesson,
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS);
@@ -164,7 +158,7 @@ public class ZabaEvent extends ListenerAdapter {
         Guild guild = jda.getGuildById("816125354875944960");
         assert guild != null;
         if(Math.random() < .15) {
-            Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage("Behold, everyone! \nToday's mood is: **" + key + "**").addFile(new File("videos/moods/" + mood.get(key).toString())).queue();
+            Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nToday's mood is: **" + key + "**").addFile(new File("videos/moods/" + mood.get(key).toString())).queue();
             System.out.println("------------------- Mood: " + key);
         }
         else{

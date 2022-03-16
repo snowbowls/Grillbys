@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 public class JonEvent extends ListenerAdapter {
+    // JonEvents are various actions with the intent of annoying someone. Nothing about this class is
+    // organized well, it usually serves as a half-measure attempt at handling silly responses
     public void onMessageReceived(MessageReceivedEvent event) {
 
         String msg = event.getMessage().getContentRaw().toLowerCase();
@@ -89,6 +91,7 @@ public class JonEvent extends ListenerAdapter {
             event.getChannel().sendMessage("https://media.discordapp.net/attachments/944254315630035005/951189791691669534/unknown.png").queue();
             System.out.println(msg);
         }
+
         if (msg.contains("@zaba")) {
             event.getMessage().addReaction("rdj:860593603033432064").queue();
             System.out.println(msg);

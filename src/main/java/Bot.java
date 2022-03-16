@@ -15,18 +15,22 @@ public class Bot{
         String TOKEN = dotenv.get("TOKEN");
 
         JDABuilder.createDefault(TOKEN)
+                // JDA Builder Properties
                 .enableIntents(GatewayIntent.GUILD_MEMBERS)
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setChunkingFilter(ChunkingFilter.ALL)
+
                 // Credit Score Events
                 .addEventListeners(new AddReactEvent())
                 .addEventListeners(new RemoveReactEvent())
                 .addEventListeners(new ShowCommandEvent())
+
                 // Other Events
                 .addEventListeners(new CCPEvent())
                 .addEventListeners(new GenResponseEvent())
                 .addEventListeners(new JonEvent())
                 .addEventListeners(new ZabaEvent())
+
                 .build();
     }
 }

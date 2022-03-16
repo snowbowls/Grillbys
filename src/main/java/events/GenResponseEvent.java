@@ -8,6 +8,8 @@ import org.json.simple.parser.JSONParser;
 import java.io.FileReader;
 
 public class GenResponseEvent extends ListenerAdapter {
+    // GenResponseEvents are actions that can occur in casual conversation.
+    // You can think of this class as where most of the 'personality' of the bot is handled.
     public void onMessageReceived(MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw().toLowerCase();
         if(msg.equalsIgnoreCase(("!help"))){
@@ -26,18 +28,16 @@ public class GenResponseEvent extends ListenerAdapter {
             return;
         }
 
-
         if(!event.getMessage().getAuthor().isBot()) {
-
             JSONParser parser = new JSONParser();
             JSONObject gen = null;
+            JSONObject genCom = null;
             JSONObject jsonObject;
             
             try {
                 Object obj = parser.parse(new FileReader("keywords.json"));
                 jsonObject = (JSONObject) obj;
                 gen = (JSONObject) jsonObject.get("general");
-
 
             } catch (Exception e) {
                 e.printStackTrace();
