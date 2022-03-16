@@ -20,25 +20,25 @@ public class CCPEvent extends ListenerAdapter {
             String msg = event.getMessage().getContentRaw();
 
             JSONParser parser = new JSONParser();
-            JSONObject ccp = null;
+            JSONObject mto = null;
             JSONObject jsonObject = null;
 
             try {
                 Object obj = parser.parse(new FileReader("keywords.json"));
                 jsonObject = (JSONObject) obj;
-                ccp = (JSONObject) jsonObject.get("ccp");
+                mto = (JSONObject) jsonObject.get("manyToOne");
 
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            assert ccp != null;
-            for (int i = 1; i <= ccp.size(); i++) {
-                JSONObject ccpScan = (JSONObject) ccp.get(String.valueOf(i));
-                String str = ccpScan.keySet().toString();
+            assert mto != null;
+            for (int i = 1; i <= mto.size(); i++) {
+                JSONObject keyScan = (JSONObject) mto.get(String.valueOf(i));
+                String str = keyScan.keySet().toString();
                 String key = str.substring(1, str.length() - 1);
                 if (msg.contains(key)) {
-                    String keyValue = ccpScan.get(key).toString();
+                    String keyValue = keyScan.get(key).toString();
                     String resKey = (String) jsonObject.get(keyValue);
                     event.getChannel().sendMessage(resKey).queue();
                 }

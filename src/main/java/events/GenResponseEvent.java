@@ -34,16 +34,19 @@ public class GenResponseEvent extends ListenerAdapter {
             JSONObject gen = null;
             JSONObject genCom = null;
             JSONObject jsonObject = null;
+            JSONObject mto = null;
             
             try {
                 Object obj = parser.parse(new FileReader("keywords.json"));
                 jsonObject = (JSONObject) obj;
                 gen = (JSONObject) jsonObject.get("general");
                 genCom = (JSONObject) jsonObject.get("generalComplex");
+                mto = (JSONObject) jsonObject.get("manyToOne");
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
             assert gen != null;
             for (int i = 1; i <= gen.size(); i++) {
                 JSONObject genScan = (JSONObject) gen.get(String.valueOf(i));
@@ -75,6 +78,18 @@ public class GenResponseEvent extends ListenerAdapter {
                         System.out.println(key + " @" + event.getChannel().getName());
                         event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
                     }
+                }
+            }
+
+            assert mto != null;
+            for (int i = 1; i <= mto.size(); i++) {
+                JSONObject keyScan = (JSONObject) mto.get(String.valueOf(i));
+                String str = keyScan.keySet().toString();
+                String key = str.substring(1, str.length() - 1);
+                if (msg.contains(key)) {
+                    String keyValue = keyScan.get(key).toString();
+                    String resKey = (String) jsonObject.get(keyValue);
+                    event.getChannel().sendMessage(resKey).queue();
                 }
             }
         }
