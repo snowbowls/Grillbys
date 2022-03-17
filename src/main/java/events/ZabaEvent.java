@@ -111,8 +111,8 @@ public class ZabaEvent extends ListenerAdapter {
 
         if(Math.random() < .99) {
             Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
-            //Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
-            //Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
+            Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
+            Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
             System.out.println("------------------- Friday: " + meme);
         }
         else{
@@ -155,7 +155,7 @@ public class ZabaEvent extends ListenerAdapter {
         int min = 1;
         int range = max - min + 1;
         int rand = (int)(Math.random() * range) + min;
-        String rng = String.valueOf(15);
+        String rng = String.valueOf(rand);
         JSONObject mood =(JSONObject) moods.get(rng);
 
         String str = mood.keySet().toString();
@@ -172,5 +172,4 @@ public class ZabaEvent extends ListenerAdapter {
         }
     }
     public void birthdayPosting(){}
-
 }
