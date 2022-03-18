@@ -66,17 +66,22 @@ public class ZabaEvent extends ListenerAdapter {
         dayToDelay.put(Calendar.THURSDAY, 0);
         int dayOfWeek = with.get(Calendar.DAY_OF_WEEK);
         int hour = with.get(Calendar.HOUR_OF_DAY);
+        int minute = with.get(Calendar.MINUTE);
         int second = with.get(Calendar.SECOND);
         int delayInDays = dayToDelay.get(dayOfWeek);
-        int delayInHours ;
-        int delayInSeconds ;
+        int delayInHours;
+        int delayInMinutes;
+        int delayInSeconds;
         if(delayInDays == 6 && hour<scheduleHour){
-            delayInHours = scheduleHour - hour;
-            delayInSeconds = delayInHours*60 - second;
+            delayInHours = (scheduleHour - hour) - 1;
+            delayInMinutes = ((60 - minute) + (delayInHours * 60));
+            delayInSeconds = (delayInMinutes*60 - second);;
         }else{
-            delayInHours = delayInDays*24+((24-hour)+scheduleHour);
-            delayInSeconds = delayInHours*60 - second;
+            delayInHours = (delayInDays*24+((24-hour)+scheduleHour)) - 1;
+            delayInMinutes = (60 - minute) + (delayInHours * 60);
+            delayInSeconds = (delayInMinutes*60 - second);
         }
+
         ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(5);
         scheduler.scheduleAtFixedRate(() -> {
             try {
@@ -105,8 +110,9 @@ public class ZabaEvent extends ListenerAdapter {
         String meme= friday.get(rng).toString();
 
         if(Math.random() < .99) {
-            Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
-            Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
+            Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
+            //Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
+            //Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
             System.out.println("------------------- Friday: " + meme);
         }
         else{
