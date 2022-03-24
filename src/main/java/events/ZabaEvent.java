@@ -1,6 +1,7 @@
 package events;
 
 import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -49,6 +50,10 @@ public class ZabaEvent extends ListenerAdapter {
     public void onReady(@NotNull ReadyEvent event) {
         fridayScheduling(event.getJDA());
         moodScheduler(event.getJDA());
+        statusSet(event.getJDA());
+    }
+    public void statusSet(JDA jda){
+        jda.getPresence().setActivity(Activity.watching("you sleep"));
     }
     public void fridayScheduling(JDA jda){
         int scheduleHour = 8;
@@ -109,7 +114,7 @@ public class ZabaEvent extends ListenerAdapter {
         String rng = String.valueOf(rand);
         String meme= friday.get(rng).toString();
 
-        if(Math.random() < .99) {
+        if(Math.random() < .20) {
             Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
             Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
             Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
@@ -150,7 +155,7 @@ public class ZabaEvent extends ListenerAdapter {
         }
         assert jsonObject != null;
 
-        JSONObject moods = (JSONObject) jsonObject.get("mood");
+        JSONObject moods = (JSONObject) jsonObject.get("moods");
         int max = moods.size();
         int min = 1;
         int range = max - min + 1;
