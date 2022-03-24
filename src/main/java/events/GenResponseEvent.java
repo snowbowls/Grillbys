@@ -89,6 +89,7 @@ public class GenResponseEvent extends ListenerAdapter {
                 if (msg.contains(key)) {
                     String keyValue = keyScan.get(key).toString();
                     String resKey = (String) jsonObject.get(keyValue);
+                    System.out.println(key + " @" + event.getChannel().getName());
                     event.getChannel().sendMessage(resKey).queue();
                 }
             }
