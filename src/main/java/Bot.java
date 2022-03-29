@@ -20,10 +20,8 @@ public class Bot{
                 .setMemberCachePolicy(MemberCachePolicy.ALL)
                 .setChunkingFilter(ChunkingFilter.ALL)
 
-                // Credit Score Events
-                .addEventListeners(new AddReactEvent())
-                .addEventListeners(new RemoveReactEvent())
-                .addEventListeners(new ShowCommandEvent())
+                // Social Credit Events
+                .addEventListeners(new SocialCreditEvent())
 
                 // Other Events
                 .addEventListeners(new GenResponseEvent())

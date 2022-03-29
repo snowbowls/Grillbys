@@ -64,7 +64,7 @@ public class ZabaEvent extends ListenerAdapter {
         fridayScheduling(event.getJDA());
         moodScheduler(event.getJDA());
         statusSet(event.getJDA());
-        creditCheckScheduler(event.getJDA());
+        //creditCheckScheduler(event.getJDA());
     }
     public void statusSet(JDA jda){
         jda.getPresence().setActivity(Activity.watching("you"));
@@ -91,7 +91,6 @@ public class ZabaEvent extends ListenerAdapter {
     }
     public void creditCheck(JDA jda) {
         JSONParser parser = new JSONParser();
-        JSONObject jsonObject = null;
         JSONObject response = null;
         ConnectionString connectionString = new ConnectionString(uri);
         MongoClientSettings settings = MongoClientSettings.builder()
@@ -103,7 +102,7 @@ public class ZabaEvent extends ListenerAdapter {
         System.out.println("* * * * * CREDIT CHECK * * * *");
         try {
             Object obj = parser.parse(new FileReader("keywords.json"));
-            jsonObject = (JSONObject) obj;
+            JSONObject jsonObject = (JSONObject) obj;
             response = (JSONObject) jsonObject.get("socialCredit");
 
         } catch (Exception e) {
