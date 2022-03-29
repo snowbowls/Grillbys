@@ -1,11 +1,18 @@
 package events;
 
+import com.mongodb.*;
+import com.mongodb.client.*;
+import com.mongodb.client.model.Projections;
+import com.mongodb.client.model.Sorts;
+import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import org.bson.Document;
+import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -22,8 +29,14 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import static com.mongodb.client.model.Filters.eq;
+
 public class ZabaEvent extends ListenerAdapter {
     // ZabaEvents are for practical functions or utilities that the bot can execute in the guild
+
+    public static Dotenv dotenv = Dotenv.load();
+    String uri = dotenv.get("URI");
+
     public void onMessageReceived(MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw().toLowerCase();
 
@@ -51,9 +64,132 @@ public class ZabaEvent extends ListenerAdapter {
         fridayScheduling(event.getJDA());
         moodScheduler(event.getJDA());
         statusSet(event.getJDA());
+        creditCheckScheduler(event.getJDA());
     }
     public void statusSet(JDA jda){
-        jda.getPresence().setActivity(Activity.watching("you sleep"));
+        jda.getPresence().setActivity(Activity.watching("you"));
+    }
+    public void creditCheckScheduler(JDA jda){
+        // get the current ZonedDateTime of your TimeZone
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
+        // set the ZonedDateTime of the first lesson at 8:05
+        ZonedDateTime nextFirstLesson = now.withHour(8).withMinute(0).withSecond(0);
+        // if it's already past the time (in this case 8:05) the first lesson will be scheduled for the next day
+        if (now.compareTo(nextFirstLesson) > 0) {
+            nextFirstLesson = nextFirstLesson.plusDays(1);
+        }
+        // duration between now and the beginning of the next first lesson
+        Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
+        // in seconds
+        long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
+        // schedules the reminder at a fixed rate of one day
+        ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
+        schedulerFirstLesson.scheduleAtFixedRate(() -> creditCheck(jda),
+                initialDelayFirstLesson,
+                TimeUnit.DAYS.toSeconds(1),
+                TimeUnit.SECONDS);
+    }
+    public void creditCheck(JDA jda) {
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = null;
+        JSONObject response = null;
+        ConnectionString connectionString = new ConnectionString(uri);
+        MongoClientSettings settings = MongoClientSettings.builder()
+                .applyConnectionString(connectionString)
+                .serverApi(ServerApi.builder()
+                        .version(ServerApiVersion.V1)
+                        .build())
+                .build();
+        System.out.println("* * * * * CREDIT CHECK * * * *");
+        try {
+            Object obj = parser.parse(new FileReader("keywords.json"));
+            jsonObject = (JSONObject) obj;
+            response = (JSONObject) jsonObject.get("socialCredit");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        try (MongoClient mongoClient = MongoClients.create(settings)) {
+            MongoDatabase database = mongoClient.getDatabase("ChillGrill");
+            MongoCollection<Document> collection = database.getCollection("socialcredit");
+
+            try {
+                Bson projectionFields = Projections.fields(
+                        Projections.include("username", "userid", "score"),
+                        Projections.excludeId());
+                try (MongoCursor<Document> cursor = collection.find()
+                        .projection(projectionFields)
+                        .sort(Sorts.descending("score")).iterator()) {
+                    while (cursor.hasNext()) {
+                        Document doc = cursor.next();
+                        int credit = doc.getInteger("score");
+                        if (credit == 150) {
+                            String userid = doc.getString("userid");
+                            JSONObject finalResponse = response;
+                            Objects.requireNonNull(jda.getUserById(userid)).openPrivateChannel()
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("250").toString()))
+                                    .queue();
+                            System.out.println("************************************************************");
+                            System.out.println(doc.getString("username") + "reached 150!");
+                            System.out.println("************************************************************");
+                        }
+                        if (credit == 300) {
+                            String userid = doc.getString("userid");
+                            JSONObject finalResponse = response;
+                            Objects.requireNonNull(jda.getUserById(userid)).openPrivateChannel()
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("250").toString()))
+                                    .queue();
+                            System.out.println("************************************************************");
+                            System.out.println(doc.getString("username") + "reached 300!");
+                            System.out.println("************************************************************");
+                        }
+                        if (credit == 600) {
+                            String userid = doc.getString("userid");
+                            JSONObject finalResponse = response;
+                            Objects.requireNonNull(jda.getUserById(userid)).openPrivateChannel()
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("500").toString()))
+                                    .queue();
+                            System.out.println("************************************************************");
+                            System.out.println(doc.getString("username") + "reached 600!");
+                            System.out.println("************************************************************");
+                        }
+                        if (credit == 750) {
+                            String userid = doc.getString("userid");
+                            JSONObject finalResponse = response;
+                            Objects.requireNonNull(jda.getUserById(userid)).openPrivateChannel()
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("750").toString()))
+                                    .queue();
+                            System.out.println("************************************************************");
+                            System.out.println(doc.getString("username") + "reached 750!");
+                            System.out.println("************************************************************");
+                        }
+                        if (credit == 840) {
+                            String userid = doc.getString("userid");
+                            JSONObject finalResponse = response;
+                            Objects.requireNonNull(jda.getUserById(userid)).openPrivateChannel()
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("850").toString()))
+                                    .queue();
+                            System.out.println("************************************************************");
+                            System.out.println(doc.getString("username") + "reached 840!");
+                            System.out.println("************************************************************");
+                        }
+                        if (credit == 990) {
+                            String userid = doc.getString("userid");
+                            JSONObject finalResponse = response;
+                            Objects.requireNonNull(jda.getUserById(userid)).openPrivateChannel()
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("1000").toString()))
+                                    .queue();
+                            System.out.println("************************************************************");
+                            System.out.println(doc.getString("username") + "reached 990!");
+                            System.out.println("************************************************************");
+                        }
+                    }
+                }
+            } catch (MongoException me) {
+                System.err.println("ERROR");
+            }
+        }
     }
     public void fridayScheduling(JDA jda){
         int scheduleHour = 8;

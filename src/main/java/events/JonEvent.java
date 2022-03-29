@@ -1,5 +1,9 @@
 package events;
 
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.ServerApi;
+import com.mongodb.ServerApiVersion;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.simple.JSONArray;
@@ -9,6 +13,7 @@ import org.json.simple.parser.JSONParser;
 import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 public class JonEvent extends ListenerAdapter {
@@ -105,6 +110,36 @@ public class JonEvent extends ListenerAdapter {
         if (msg.contains("crab")) {
             event.getMessage().addReaction("Crab_Rave:666502984976564224> ").queue();
             System.out.println(msg);
+        }
+
+        if (msg.contains("mom")){
+            JSONObject response = null;
+            try {
+                Object obj = parser.parse(new FileReader("keywords.json"));
+                jsonObject = (JSONObject) obj;
+                response = (JSONObject) jsonObject.get("socialCredit");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+                System.out.println("************************************************************");
+                System.out.println(event.getAuthor().getName() + " had their family kidnapped!" );
+
+                String userid = event.getAuthor().getName();
+                JSONObject finalResponse = response;
+                if (Math.random() < .90)
+                    event.getJDA().getUserById(event.getMessage().getAuthor().getId()).openPrivateChannel()
+                            .flatMap(channel -> channel.sendMessage(finalResponse.get("1").toString()))
+                            .queue();
+                else {
+                    event.getJDA().getUserById(event.getMessage().getAuthor().getId()).openPrivateChannel()
+                            .flatMap(channel -> channel.sendMessage(finalResponse.get("2").toString()))
+                            .queue();
+                    System.out.println(" U W U " );
+                }
+
+
+                System.out.println("************************************************************");
         }
 
         // Delete me

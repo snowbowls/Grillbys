@@ -82,8 +82,6 @@ public class ShowCommandEvent extends ListenerAdapter {
                 eb.setColor(new Color(114, 41, 54));
 
 
-
-
                 for (Member u : users) {
                     usersId.add(u.getId());
                 }
@@ -97,7 +95,7 @@ public class ShowCommandEvent extends ListenerAdapter {
                                 Projections.excludeId());
                         try (MongoCursor<Document> cursor = collection.find()
                                 .projection(projectionFields)
-                                .sort(Sorts.descending("username")).iterator()) {
+                                .sort(Sorts.descending("score")).iterator()) {
                             while (cursor.hasNext()) {
                                 Document doc = cursor.next();
                                 if (usersId.contains(doc.getString("userid"))) {
