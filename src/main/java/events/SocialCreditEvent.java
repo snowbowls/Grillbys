@@ -240,9 +240,7 @@ public class SocialCreditEvent extends ListenerAdapter {
                     } else {
                         int currVal = doc.getInteger("score");
                         doc.append("score", currVal + 15);
-                        System.out.println("-------------------------------------------------");
-                        System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                        System.out.println("Reactor: " + reactor + " @" + event.getChannel().getName());
+                        System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " --> Reactor: " + reactor + " @" + event.getChannel().getName());
                         try {
                             Bson query = eq("userid", userid);
                             ReplaceOptions opts = new ReplaceOptions().upsert(true);
@@ -283,9 +281,7 @@ public class SocialCreditEvent extends ListenerAdapter {
                     } else {
                         int currVal = doc.getInteger("score");
                         doc.append("score", currVal - 15);
-                        System.out.println("-------------------------------------------------");
-                        System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                        System.out.println("Reactor: " + reactor + " @" + event.getChannel().getName());
+                        System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " --> Reactor: " + reactor + " @" + event.getChannel().getName());
                         try {
                             Bson query = eq("userid", userid);
                             ReplaceOptions opts = new ReplaceOptions().upsert(true);
@@ -391,9 +387,7 @@ public class SocialCreditEvent extends ListenerAdapter {
                         } else {
                             int currVal = doc.getInteger("score");
                             doc.append("score", currVal - 15);
-                            System.out.println("-------------------------------------------------");
-                            System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                            System.out.println("Reactor: " + reactor);
+                            System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " --> Reactor: " + reactor + " @" + event.getChannel().getName());
                             try {
                                 Bson query = eq("userid", userid);
                                 ReplaceOptions opts = new ReplaceOptions().upsert(true);
@@ -422,9 +416,7 @@ public class SocialCreditEvent extends ListenerAdapter {
                         } else {
                             int currVal = doc.getInteger("score");
                             doc.append("score", currVal + 15);
-                            System.out.println("-------------------------------------------------");
-                            System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " @" + dtf.format(now));
-                            System.out.println("Reactor: " + reactor);
+                            System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " --> Reactor: " + reactor + " @" + event.getChannel().getName());
                             try {
                                 Bson query = eq("userid", userid);
                                 ReplaceOptions opts = new ReplaceOptions().upsert(true);
