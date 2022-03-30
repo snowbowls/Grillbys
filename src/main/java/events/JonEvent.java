@@ -46,7 +46,7 @@ public class JonEvent extends ListenerAdapter {
                 if(event.getAuthor().getId().equals("222163619125788682")) {
                     event.getMessage().addReaction("15_neg:934919187787288597").queue();
                 }
-                System.out.println(msg);
+                System.out.println("dragonball stuff" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                 return;
             }
         }
@@ -56,14 +56,14 @@ public class JonEvent extends ListenerAdapter {
         for (Object key : triggers) {
             if (msg.contains(key.toString())) {
                 event.getMessage().addReaction("amongass:854818205624827935").queue();
-                System.out.println(msg);
+                System.out.println("sus stuff" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                 return;
             }
         }
 
         if (msg.contains("grill")) {
             event.getMessage().addReaction("justagriller:816352491386044426").queue();
-            System.out.println(msg);
+            System.out.println("grill" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
 
         if (msg.equals("n")) {
@@ -77,39 +77,39 @@ public class JonEvent extends ListenerAdapter {
             if(!event.getAuthor().getId().equals("222163619125788682")) {
                 event.getMessage().addReaction("15_neg:934919187787288597").queue();
             }
-            System.out.println(msg);
+            System.out.println("n" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
             return;
         }
 
         if (msg.contains("cum")) {
             event.getMessage().addReaction("gokek:801618290577113109").queue();
-            System.out.println(msg);
+            System.out.println("cum" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
 
         }
 
         if (msg.contains("foot") || msg.contains("feet")) {
             event.getMessage().addReaction("Hyper_Engineer:666502984846409758").queue();
-            System.out.println(msg);
+            System.out.println("foot / feet" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
 
         if (msg.contains("@everyone")) {
             event.getChannel().sendMessage("https://media.discordapp.net/attachments/944254315630035005/951189791691669534/unknown.png").queue();
-            System.out.println(msg);
+            System.out.println("@everyone" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
 
-        if (msg.contains("@zaba")) {
+        if (msg.contains("zaba")) {
             event.getMessage().addReaction("rdj:860593603033432064").queue();
-            System.out.println(msg);
+            System.out.println("zaba" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
 
         if (msg.contains("busta")) {
             event.getMessage().addReaction("pet_busta:950885255202615316").queue();
-            System.out.println(msg);
+            System.out.println("busta" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
 
         if (msg.contains("crab")) {
             event.getMessage().addReaction("Crab_Rave:666502984976564224> ").queue();
-            System.out.println(msg);
+            System.out.println("crab" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
 
         if (msg.contains("mom")){

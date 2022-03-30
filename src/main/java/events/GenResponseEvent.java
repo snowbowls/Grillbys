@@ -53,7 +53,7 @@ public class GenResponseEvent extends ListenerAdapter {
                 String str = genScan.keySet().toString();
                 String key = str.substring(1, str.length() - 1);
                 if (msg.contains(key)) {
-                    System.out.println(key + " @" + event.getChannel().getName());
+                    System.out.println(key + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                     event.getChannel().sendMessage(genScan.get(key).toString()).queue();
                 }
             }
@@ -70,12 +70,12 @@ public class GenResponseEvent extends ListenerAdapter {
 
                     if(key.equals("uwu")) {
                         if (Math.random() > .65) {
-                            System.out.println(key + " @" + event.getChannel().getName());
+                            System.out.println(key + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                             event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
                         }
                     }
                     else {
-                        System.out.println(key + " @" + event.getChannel().getName());
+                        System.out.println(key + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                         event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
                     }
                 }
@@ -89,7 +89,7 @@ public class GenResponseEvent extends ListenerAdapter {
                 if (msg.contains(key)) {
                     String keyValue = keyScan.get(key).toString();
                     String resKey = (String) jsonObject.get(keyValue);
-                    System.out.println(key + " @" + event.getChannel().getName());
+                    System.out.println(key + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                     event.getChannel().sendMessage(resKey).queue();
                 }
             }
