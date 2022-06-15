@@ -112,7 +112,7 @@ public class JonEvent extends ListenerAdapter {
             System.out.println("crab" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
 
-        if (msg.contains("mom")){
+        if (msg.contains("rrrr mom")){
             JSONObject response = null;
             try {
                 Object obj = parser.parse(new FileReader("keywords.json"));

@@ -14,15 +14,13 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileReader;
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -63,6 +61,7 @@ public class ZabaEvent extends ListenerAdapter {
     public void onReady(@NotNull ReadyEvent event) {
         fridayScheduling(event.getJDA());
         moodScheduler(event.getJDA());
+        birthScheduler(event.getJDA());
         statusSet(event.getJDA());
         //creditCheckScheduler(event.getJDA());
     }
@@ -311,5 +310,78 @@ public class ZabaEvent extends ListenerAdapter {
             System.out.println("------------------- No mood for today");
         }
     }
-    public void birthdayPosting(){}
+    public void birthScheduler(JDA jda){
+        // get the current ZonedDateTime of your TimeZone
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
+        // set the ZonedDateTime of the first lesson at 8:05
+        ZonedDateTime nextFirstLesson = now.withHour(8).withMinute(0).withSecond(0);
+        // if it's already past the time (in this case 8:05) the first lesson will be scheduled for the next day
+        if (now.compareTo(nextFirstLesson) > 0) {
+            nextFirstLesson = nextFirstLesson.plusDays(1);
+        }
+        // duration between now and the beginning of the next first lesson
+        Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
+        // in seconds
+        long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
+        // schedules the reminder at a fixed rate of one day
+        ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
+        schedulerFirstLesson.scheduleAtFixedRate(() -> birthdayPosting(jda),
+                initialDelayFirstLesson,
+                TimeUnit.DAYS.toSeconds(1),
+                TimeUnit.SECONDS);
+    }
+    public void birthdayPosting(JDA jda) {
+        String chatID = "816125354875944964";
+        String today = LocalDate.now().toString().substring(5);
+        //System.out.println("Today's Date: " + today);
+
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject = null;
+
+        // Load JSON
+        JSONObject dates = null;
+        JSONObject poi = null;
+        try {
+            Object obj = parser.parse(new FileReader("keywords.json"));
+            jsonObject = (JSONObject) obj;
+            dates = (JSONObject) jsonObject.get("birthdays");
+            poi = (JSONObject) jsonObject.get("poi");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assert dates != null;
+        assert poi != null;
+        Set<String> birthDates = dates.keySet();
+        if(birthDates.contains(today)) {
+            Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("Behold, everyone!").queue();
+            String id = poi.get(dates.get(today)).toString();
+            StringBuilder mention = new StringBuilder();
+            mention.append("<@");
+            mention.append(id);
+            mention.append(">");
+
+            if(dates.get(today).toString().equals("Jon")){
+
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage(":green_circle: Today is " + mention + "'s birthday! :purple_circle:").queue();
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("\n⣿⣿⠿⠿⠿⠿⣿⣷⣂⠄⠄⠄⠄⠄⠄⠈⢷⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n" +
+                        "⣷⡾⠯⠉⠉⠉⠉⠚⠑⠄⡀⠄⠄⠄⠄⠄⠈⠻⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿\n" +
+                        "⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⡀⠄⠄⠄⠄⠄⠄⠄⠄⠉⠻⣿⣿⣿⣿⣿⣿⣿⣿⣿\n" +
+                        "⠄⠄⠄⠄⠄⠄⠄⠄⠄⢀⠎⠄⠄⣀⡀⠄⠄⠄⠄⠄⠄⠄⠘⠋⠉⠉⠉⠉⠭⠿⣿\n" +
+                        "⡀⠄⠄⠄⠄⠄⠄⠄⠄⡇⠄⣠⣾⣳⠁⠄⠄⢺⡆⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄⠄\n" +
+                        "⣿⣷⡦⠄⠄⠄⠄⠄⢠⠃⢰⣿⣯⣿⡁⢔⡒⣶⣯⡄⢀⢄⡄⠄⠄⠄⠄⠄⣀⣤⣶\n" +
+                        "⠓⠄⠄⠄⠄⠄⠸⠄⢀⣤⢘⣿⣿⣷⣷⣿⠛⣾⣿⣿⣆⠾⣷⠄⠄⠄⠄⢀⣀⣼⣿\n" +
+                        "⠄⠄⠄⠄⠄⠄⠄⠑⢘⣿⢰⡟⣿⣿⣷⣫⣭⣿⣾⣿⣿⣴⠏⠄⠄⢀⣺⣿⣿⣿⣿\n" +
+                        "⣿⣿⣿⣿⣷⠶⠄⠄⠄⠹⣮⣹⡘⠛⠿⣫⣾⣿⣿⣿⡇⠑⢤⣶⣿⣿⣿⣿⣿⣿⣿\n" +
+                        "⣿⣿⣿⣯⣤⣤⣤⣤⣀⣀⡹⣿⣿⣷⣯⣽⣿⣿⡿⣋⣴⡀⠈⣿⣿⣿⣿⣿⣿⣿⣿\n" +
+                        "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣾⣝⡻⢿⣿⡿⠋⡒⣾⣿⣧⢰⢿⣿⣿⣿⣿⣿⣿⣿\n" +
+                        "⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⠃⣏⣟⣼⢋⡾⣿⣿⣿⣘⣔⠙⠿⠿⠿⣿⣿⣿\n" +
+                        "⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⣛⡵⣻⠿⠟⠁⠛⠰⠿⢿⠿⡛⠉⠄⠄⢀⠄⠉⠉⢉\n" +
+                        "⣿⣿⣿⣿⡿⢟⠩⠉⣠⣴⣶⢆⣴⡶⠿⠟⠛⠋⠉⠩⠄⠉⢀⠠⠂⠈⠄⠐⠄⠄⠄").queue();
+            }
+            else{
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("Today is " + mention + "'s birthday!").queue();
+            }
+        }
+    }
 }

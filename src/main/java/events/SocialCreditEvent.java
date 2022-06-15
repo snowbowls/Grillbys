@@ -215,7 +215,6 @@ public class SocialCreditEvent extends ListenerAdapter {
             // Trigger when message add react +15
             if (readId.equals("900119408859578451") && !username.equals(reactor)) {
                 try (MongoClient mongoClient = MongoClients.create(settings)) {
-
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     Bson projectionFields = Projections.fields(
@@ -250,6 +249,8 @@ public class SocialCreditEvent extends ListenerAdapter {
                             System.err.println("\nUnable to update due to an error: " + me);
                         }
                     }
+                }catch (MongoException me) {
+                    System.err.println("Unable to connect: " + me);
                 }
             }
 
