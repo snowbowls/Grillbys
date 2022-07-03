@@ -7,6 +7,7 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileReader;
+import java.util.Set;
 
 public class GenResponseEvent extends ListenerAdapter {
     // GenResponseEvents are actions that can occur in casual conversation.
@@ -32,6 +33,7 @@ public class GenResponseEvent extends ListenerAdapter {
         if(!event.getMessage().getAuthor().isBot()) {
             JSONParser parser = new JSONParser();
             JSONObject gen = null;
+            JSONObject genEx = null;
             JSONObject genCom = null;
             JSONObject jsonObject = null;
             JSONObject mto = null;
@@ -41,6 +43,7 @@ public class GenResponseEvent extends ListenerAdapter {
                 jsonObject = (JSONObject) obj;
                 gen = (JSONObject) jsonObject.get("general");
                 genCom = (JSONObject) jsonObject.get("generalComplex");
+                genEx = (JSONObject) jsonObject.get("generalExact");
                 mto = (JSONObject) jsonObject.get("manyToOne");
 
             } catch (Exception e) {
@@ -79,6 +82,13 @@ public class GenResponseEvent extends ListenerAdapter {
                         event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
                     }
                 }
+            }
+
+            assert genEx != null;
+            Set<String> scan = genEx.keySet();
+            if(scan.contains(msg)){
+                System.out.println( " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
+                event.getChannel().sendMessage(genEx.get(msg).toString()).queue();
             }
 
             assert mto != null;
