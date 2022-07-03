@@ -65,6 +65,12 @@ public class JonEvent extends ListenerAdapter {
             event.getMessage().addReaction("justagriller:816352491386044426").queue();
             System.out.println("grill" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
+        if (msg.equals("based")){
+            if(Math.random() > 0.85){
+                event.getChannel().sendMessage("not based").queue();
+                System.out.println("not based" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
+                }
+        }
 
         if (msg.equals("n")) {
             event.getMessage().addReaction("disintegrate:829491387824865321").queue();

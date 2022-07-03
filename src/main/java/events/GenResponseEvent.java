@@ -37,6 +37,8 @@ public class GenResponseEvent extends ListenerAdapter {
             JSONObject genCom = null;
             JSONObject jsonObject = null;
             JSONObject mto = null;
+            JSONObject genEm = null;
+            JSONObject emoteList = null;
             
             try {
                 Object obj = parser.parse(new FileReader("keywords.json"));
@@ -45,6 +47,9 @@ public class GenResponseEvent extends ListenerAdapter {
                 genCom = (JSONObject) jsonObject.get("generalComplex");
                 genEx = (JSONObject) jsonObject.get("generalExact");
                 mto = (JSONObject) jsonObject.get("manyToOne");
+                genEm = (JSONObject) jsonObject.get("generalEmote");
+                emoteList = (JSONObject) jsonObject.get("emotes");
+
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -89,6 +94,19 @@ public class GenResponseEvent extends ListenerAdapter {
             if(scan.contains(msg)){
                 System.out.println( " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                 event.getChannel().sendMessage(genEx.get(msg).toString()).queue();
+            }
+
+            assert genEm != null;
+            assert emoteList != null;
+            for (int i = 1; i <= genEm.size(); i++){
+                JSONObject genScan = (JSONObject) genEm.get(String.valueOf(i));
+                String str = genScan.keySet().toString();
+                String key = str.substring(1, str.length() - 1);
+                if (msg.contains(key)) {
+                    String emoteKey = genScan.get(key).toString();
+                    String emote = emoteList.get(emoteKey).toString();
+                    event.getMessage().addReaction(emote).queue();
+                }
             }
 
             assert mto != null;
