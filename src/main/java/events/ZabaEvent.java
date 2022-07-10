@@ -61,7 +61,7 @@ public class ZabaEvent extends ListenerAdapter {
     public void onReady(@NotNull ReadyEvent event) {
         fridayScheduling(event.getJDA());
         moodScheduler(event.getJDA());
-        birthScheduler(event.getJDA());
+        birthdayScheduler(event.getJDA());
         statusSet(event.getJDA());
         //creditCheckScheduler(event.getJDA());
     }
@@ -310,7 +310,7 @@ public class ZabaEvent extends ListenerAdapter {
             System.out.println("------------------- No mood for today");
         }
     }
-    public void birthScheduler(JDA jda){
+    public void birthdayScheduler(JDA jda){
         // get the current ZonedDateTime of your TimeZone
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
         // set the ZonedDateTime of the first lesson at 8:05
@@ -333,7 +333,7 @@ public class ZabaEvent extends ListenerAdapter {
     public void birthdayPosting(JDA jda) {
         String chatID = "816125354875944964";
         String today = LocalDate.now().toString().substring(5);
-        //System.out.println("Today's Date: " + today);
+        System.out.println("Today's Date: " + today);
 
         JSONParser parser = new JSONParser();
         JSONObject jsonObject = null;
@@ -360,7 +360,7 @@ public class ZabaEvent extends ListenerAdapter {
             mention.append("<@");
             mention.append(id);
             mention.append(">");
-
+            System.out.print("Today's birthday is: " + dates.get(today).toString());
             if(dates.get(today).toString().equals("Jon")){
 
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage(":green_circle: Today is " + mention + "'s birthday! :purple_circle:").queue();
@@ -379,7 +379,12 @@ public class ZabaEvent extends ListenerAdapter {
                         "⣿⣿⣿⣿⣿⣿⣿⣿⣿⠿⠿⣛⡵⣻⠿⠟⠁⠛⠰⠿⢿⠿⡛⠉⠄⠄⢀⠄⠉⠉⢉\n" +
                         "⣿⣿⣿⣿⡿⢟⠩⠉⣠⣴⣶⢆⣴⡶⠿⠟⠛⠋⠉⠩⠄⠉⢀⠠⠂⠈⠄⠐⠄⠄⠄").queue();
             }
-            
+            if(dates.get(today).toString().equals("Gustavo")){
+
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("<:bowsette:510714047595806738> Today is " + mention + "'s birthday! <:2D:250844355429007370>").queue();
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("https://media.discordapp.net/attachments/261297258803363850/995463962516787232/Goose.png").queue();
+            }
+
             else{
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("Today is " + mention + "'s birthday!").queue();
             }

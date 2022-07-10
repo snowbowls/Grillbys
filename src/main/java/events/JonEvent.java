@@ -87,35 +87,9 @@ public class JonEvent extends ListenerAdapter {
             return;
         }
 
-        if (msg.contains("cum")) {
-            event.getMessage().addReaction("gokek:801618290577113109").queue();
-            System.out.println("cum" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-
-        }
-
-        if (msg.contains("foot") || msg.contains("feet")) {
-            event.getMessage().addReaction("Hyper_Engineer:666502984846409758").queue();
-            System.out.println("foot / feet" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-        }
-
         if (msg.contains("@everyone")) {
             event.getChannel().sendMessage("https://media.discordapp.net/attachments/944254315630035005/951189791691669534/unknown.png").queue();
             System.out.println("@everyone" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-        }
-
-        if (msg.contains("zaba")) {
-            event.getMessage().addReaction("rdj:860593603033432064").queue();
-            System.out.println("zaba" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-        }
-
-        if (msg.contains("busta")) {
-            event.getMessage().addReaction("pet_busta:950885255202615316").queue();
-            System.out.println("busta" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-        }
-
-        if (msg.contains("crab")) {
-            event.getMessage().addReaction("Crab_Rave:666502984976564224> ").queue();
-            System.out.println("crab" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
 
         if (msg.contains("rrrr mom")){
