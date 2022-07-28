@@ -12,6 +12,7 @@ import java.util.Set;
 public class GenResponseEvent extends ListenerAdapter {
     // GenResponseEvents are actions that can occur in casual conversation.
     // You can think of this class as where most of the 'personality' of the bot is handled.
+    // Naming convention can be done better but the gist is this class is used for handling the JSON file
     public void onMessageReceived(MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw().toLowerCase();
         if(msg.equalsIgnoreCase(("!help"))){

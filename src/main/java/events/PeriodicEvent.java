@@ -14,14 +14,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileReader;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -29,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class ZabaEvent extends ListenerAdapter {
+public class PeriodicEvent extends ListenerAdapter {
     // ZabaEvents are for practical functions or utilities that the bot can execute in the guild
 
     public static Dotenv dotenv = Dotenv.load();
