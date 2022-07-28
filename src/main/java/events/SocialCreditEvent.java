@@ -32,17 +32,17 @@ import java.util.Objects;
 import static com.mongodb.client.model.Filters.eq;
 
 public class SocialCreditEvent extends ListenerAdapter {
-    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-    LocalDateTime now = LocalDateTime.now();
-
     public static Dotenv dotenv = Dotenv.load();
     String uri = dotenv.get("URI");
 
+    // On Message Received
+    // Used for social credit related commands
     public void onMessageReceived(MessageReceivedEvent event){
-        //String username = event.getAuthor().getName();
+        // Get author name, parse message for processing
         String userid = event.getMessage().getAuthor().getId();
         String[] msg = event.getMessage().getContentRaw().split(" ");
 
+        // Database connection
         ConnectionString connectionString = new ConnectionString(uri);
         MongoClientSettings settings = MongoClientSettings.builder()
                 .applyConnectionString(connectionString)

@@ -9,6 +9,7 @@
         <module name="Zaba" />
         <module name="Grillbys" />
         <module name="grillbys" />
+        <module name="zaba" />
       </profile>
     </annotationProcessing>
   </component>

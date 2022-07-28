@@ -37,25 +37,6 @@ public class ZabaEvent extends ListenerAdapter {
 
     public void onMessageReceived(MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw().toLowerCase();
-
-        if(msg.equals("echo")){
-//            JSONParser parser = new JSONParser();
-//            JSONObject test = null;
-//            JSONObject jsonObject;
-//            try {
-//                Object obj = parser.parse(new FileReader("keywords.json"));
-//                jsonObject = (JSONObject) obj;
-//                test = (JSONObject) jsonObject.get("test");
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            assert test != null;
-//            Set<String> keys = test.keySet();
-//            for (String f : keys) {
-//                System.out.println(f);
-//            }
-        }
     }
     // Scheduler
     public void onReady(@NotNull ReadyEvent event) {
@@ -214,7 +195,7 @@ public class ZabaEvent extends ListenerAdapter {
         if(delayInDays == 6 && hour<scheduleHour){
             delayInHours = (scheduleHour - hour) - 1;
             delayInMinutes = ((60 - minute) + (delayInHours * 60));
-            delayInSeconds = (delayInMinutes*60 - second);;
+            delayInSeconds = (delayInMinutes*60 - second);
         }else{
             delayInHours = (delayInDays*24+((24-hour)+scheduleHour)) - 1;
             delayInMinutes = (60 - minute) + (delayInHours * 60);
@@ -336,7 +317,7 @@ public class ZabaEvent extends ListenerAdapter {
         System.out.println("Today's Date: " + today);
 
         JSONParser parser = new JSONParser();
-        JSONObject jsonObject = null;
+        JSONObject jsonObject;
 
         // Load JSON
         JSONObject dates = null;
@@ -383,6 +364,10 @@ public class ZabaEvent extends ListenerAdapter {
 
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("<:bowsette:510714047595806738> Today is " + mention + "'s birthday! <:2D:250844355429007370>").queue();
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("https://media.discordapp.net/attachments/261297258803363850/995463962516787232/Goose.png").queue();
+            }
+            if(dates.get(today).toString().equals("Corey")){
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("<:sus:802264386026340403> Today is " + mention + "'s birthday! <:justatheory:971167345437462589>").queue();
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("https://cdn.discordapp.com/attachments/261297258803363850/997717479537246278/unknown.png").queue();
             }
 
             else{
