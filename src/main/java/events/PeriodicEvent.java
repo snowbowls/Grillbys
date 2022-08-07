@@ -28,14 +28,9 @@ import java.util.concurrent.TimeUnit;
 import static com.mongodb.client.model.Filters.eq;
 
 public class PeriodicEvent extends ListenerAdapter {
-    // ZabaEvents are for practical functions or utilities that the bot can execute in the guild
-
+    // PeriodicEvents are for routine functions based on time
     public static Dotenv dotenv = Dotenv.load();
     String uri = dotenv.get("URI");
-
-    public void onMessageReceived(MessageReceivedEvent event) {
-        String msg = event.getMessage().getContentRaw().toLowerCase();
-    }
     // Scheduler
     public void onReady(@NotNull ReadyEvent event) {
         fridayScheduling(event.getJDA());
@@ -47,20 +42,17 @@ public class PeriodicEvent extends ListenerAdapter {
     public void statusSet(JDA jda){
         jda.getPresence().setActivity(Activity.watching("you"));
     }
+
+    // creditCheck was for sending private messages upon reaching a specific credit
+    // this didn't work out because I waited to long to get it working
     public void creditCheckScheduler(JDA jda){
-        // get the current ZonedDateTime of your TimeZone
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
-        // set the ZonedDateTime of the first lesson at 8:05
         ZonedDateTime nextFirstLesson = now.withHour(8).withMinute(0).withSecond(0);
-        // if it's already past the time (in this case 8:05) the first lesson will be scheduled for the next day
         if (now.compareTo(nextFirstLesson) > 0) {
             nextFirstLesson = nextFirstLesson.plusDays(1);
         }
-        // duration between now and the beginning of the next first lesson
         Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
-        // in seconds
         long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
-        // schedules the reminder at a fixed rate of one day
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
         schedulerFirstLesson.scheduleAtFixedRate(() -> creditCheck(jda),
                 initialDelayFirstLesson,
@@ -168,6 +160,8 @@ public class PeriodicEvent extends ListenerAdapter {
             }
         }
     }
+
+    // Friday meme posting
     public void fridayScheduling(JDA jda){
         int scheduleHour = 8;
 
@@ -238,19 +232,14 @@ public class PeriodicEvent extends ListenerAdapter {
         }
     }
     public void moodScheduler(JDA jda){
-        // get the current ZonedDateTime of your TimeZone
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
-        // set the ZonedDateTime of the first lesson at 8:05
         ZonedDateTime nextFirstLesson = now.withHour(11).withMinute(0).withSecond(0);
-        // if it's already past the time (in this case 8:05) the first lesson will be scheduled for the next day
         if (now.compareTo(nextFirstLesson) > 0) {
             nextFirstLesson = nextFirstLesson.plusDays(1);
         }
-        // duration between now and the beginning of the next first lesson
         Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
-        // in seconds
         long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
-        // schedules the reminder at a fixed rate of one day
+
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
         schedulerFirstLesson.scheduleAtFixedRate(() -> moodPosting(jda),
                 initialDelayFirstLesson,
@@ -290,19 +279,14 @@ public class PeriodicEvent extends ListenerAdapter {
         }
     }
     public void birthdayScheduler(JDA jda){
-        // get the current ZonedDateTime of your TimeZone
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
-        // set the ZonedDateTime of the first lesson at 8:05
         ZonedDateTime nextFirstLesson = now.withHour(8).withMinute(0).withSecond(0);
-        // if it's already past the time (in this case 8:05) the first lesson will be scheduled for the next day
         if (now.compareTo(nextFirstLesson) > 0) {
             nextFirstLesson = nextFirstLesson.plusDays(1);
         }
-        // duration between now and the beginning of the next first lesson
         Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
-        // in seconds
         long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
-        // schedules the reminder at a fixed rate of one day
+
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
         schedulerFirstLesson.scheduleAtFixedRate(() -> birthdayPosting(jda),
                 initialDelayFirstLesson,

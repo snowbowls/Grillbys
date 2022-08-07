@@ -21,8 +21,11 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 import org.jetbrains.annotations.NotNull;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.awt.*;
+import java.io.FileReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -291,6 +294,36 @@ public class SocialCreditEvent extends ListenerAdapter {
                         } catch (MongoException me) {
                             System.err.println("Unable to update due to an error: " + me);
                         }
+                    }
+                    if(event.getUser().getId().equals("251453431758192642") && userid.equals("944247658552385566")){
+                        JSONObject response = null;
+                        JSONParser parser = new JSONParser();
+                        JSONObject jsonObject = null;
+                        try {
+                            Object obj = parser.parse(new FileReader("keywords.json"));
+                            jsonObject = (JSONObject) obj;
+                            response = (JSONObject) jsonObject.get("socialCredit");
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        System.out.println("************************************************************");
+                        System.out.println(event.getUser().getName() + " had their family kidnapped!" );
+
+                        JSONObject finalResponse = response;
+                        if (Math.random() < .99)
+                            event.getJDA().getUserById(event.getUser().getId()).openPrivateChannel()
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("1").toString()))
+                                    .queue();
+                        else {
+                            event.getJDA().getUserById(event.getUser().getId()).openPrivateChannel()
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("2").toString()))
+                                    .queue();
+                            System.out.println(" U W U " );
+                        }
+
+
+                        System.out.println("************************************************************");
                     }
                 }
             }
