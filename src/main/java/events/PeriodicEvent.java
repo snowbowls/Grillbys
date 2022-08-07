@@ -14,14 +14,12 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileReader;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -29,34 +27,10 @@ import java.util.concurrent.TimeUnit;
 
 import static com.mongodb.client.model.Filters.eq;
 
-public class ZabaEvent extends ListenerAdapter {
-    // ZabaEvents are for practical functions or utilities that the bot can execute in the guild
-
+public class PeriodicEvent extends ListenerAdapter {
+    // PeriodicEvents are for routine functions based on time
     public static Dotenv dotenv = Dotenv.load();
     String uri = dotenv.get("URI");
-
-    public void onMessageReceived(MessageReceivedEvent event) {
-        String msg = event.getMessage().getContentRaw().toLowerCase();
-
-        if(msg.equals("echo")){
-//            JSONParser parser = new JSONParser();
-//            JSONObject test = null;
-//            JSONObject jsonObject;
-//            try {
-//                Object obj = parser.parse(new FileReader("keywords.json"));
-//                jsonObject = (JSONObject) obj;
-//                test = (JSONObject) jsonObject.get("test");
-//            } catch (Exception e) {
-//                e.printStackTrace();
-//            }
-//
-//            assert test != null;
-//            Set<String> keys = test.keySet();
-//            for (String f : keys) {
-//                System.out.println(f);
-//            }
-        }
-    }
     // Scheduler
     public void onReady(@NotNull ReadyEvent event) {
         fridayScheduling(event.getJDA());
@@ -68,20 +42,17 @@ public class ZabaEvent extends ListenerAdapter {
     public void statusSet(JDA jda){
         jda.getPresence().setActivity(Activity.watching("you"));
     }
+
+    // creditCheck was for sending private messages upon reaching a specific credit
+    // this didn't work out because I waited to long to get it working
     public void creditCheckScheduler(JDA jda){
-        // get the current ZonedDateTime of your TimeZone
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
-        // set the ZonedDateTime of the first lesson at 8:05
         ZonedDateTime nextFirstLesson = now.withHour(8).withMinute(0).withSecond(0);
-        // if it's already past the time (in this case 8:05) the first lesson will be scheduled for the next day
         if (now.compareTo(nextFirstLesson) > 0) {
             nextFirstLesson = nextFirstLesson.plusDays(1);
         }
-        // duration between now and the beginning of the next first lesson
         Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
-        // in seconds
         long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
-        // schedules the reminder at a fixed rate of one day
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
         schedulerFirstLesson.scheduleAtFixedRate(() -> creditCheck(jda),
                 initialDelayFirstLesson,
@@ -189,6 +160,8 @@ public class ZabaEvent extends ListenerAdapter {
             }
         }
     }
+
+    // Friday meme posting
     public void fridayScheduling(JDA jda){
         int scheduleHour = 8;
 
@@ -214,7 +187,7 @@ public class ZabaEvent extends ListenerAdapter {
         if(delayInDays == 6 && hour<scheduleHour){
             delayInHours = (scheduleHour - hour) - 1;
             delayInMinutes = ((60 - minute) + (delayInHours * 60));
-            delayInSeconds = (delayInMinutes*60 - second);;
+            delayInSeconds = (delayInMinutes*60 - second);
         }else{
             delayInHours = (delayInDays*24+((24-hour)+scheduleHour)) - 1;
             delayInMinutes = (60 - minute) + (delayInHours * 60);
@@ -259,19 +232,14 @@ public class ZabaEvent extends ListenerAdapter {
         }
     }
     public void moodScheduler(JDA jda){
-        // get the current ZonedDateTime of your TimeZone
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
-        // set the ZonedDateTime of the first lesson at 8:05
         ZonedDateTime nextFirstLesson = now.withHour(11).withMinute(0).withSecond(0);
-        // if it's already past the time (in this case 8:05) the first lesson will be scheduled for the next day
         if (now.compareTo(nextFirstLesson) > 0) {
             nextFirstLesson = nextFirstLesson.plusDays(1);
         }
-        // duration between now and the beginning of the next first lesson
         Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
-        // in seconds
         long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
-        // schedules the reminder at a fixed rate of one day
+
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
         schedulerFirstLesson.scheduleAtFixedRate(() -> moodPosting(jda),
                 initialDelayFirstLesson,
@@ -311,19 +279,14 @@ public class ZabaEvent extends ListenerAdapter {
         }
     }
     public void birthdayScheduler(JDA jda){
-        // get the current ZonedDateTime of your TimeZone
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
-        // set the ZonedDateTime of the first lesson at 8:05
         ZonedDateTime nextFirstLesson = now.withHour(8).withMinute(0).withSecond(0);
-        // if it's already past the time (in this case 8:05) the first lesson will be scheduled for the next day
         if (now.compareTo(nextFirstLesson) > 0) {
             nextFirstLesson = nextFirstLesson.plusDays(1);
         }
-        // duration between now and the beginning of the next first lesson
         Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
-        // in seconds
         long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
-        // schedules the reminder at a fixed rate of one day
+
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
         schedulerFirstLesson.scheduleAtFixedRate(() -> birthdayPosting(jda),
                 initialDelayFirstLesson,
@@ -336,7 +299,7 @@ public class ZabaEvent extends ListenerAdapter {
         System.out.println("Today's Date: " + today);
 
         JSONParser parser = new JSONParser();
-        JSONObject jsonObject = null;
+        JSONObject jsonObject;
 
         // Load JSON
         JSONObject dates = null;
@@ -385,8 +348,8 @@ public class ZabaEvent extends ListenerAdapter {
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("https://media.discordapp.net/attachments/261297258803363850/995463962516787232/Goose.png").queue();
             }
             if(dates.get(today).toString().equals("Corey")){
-                Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("<:sus:802264386026340403> Today is " + mention + "'s birthday! <:justatheory:971167345437462589>").queue();
-                Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("https://cdn.discordapp.com/attachments/261297258803363850/997717479537246278/unknown.png").queue();
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("<:sus:802264386026340403> Today is " + mention + "'s birthday! <:justatheory:971167345437462589>").queue();
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("https://cdn.discordapp.com/attachments/261297258803363850/997717479537246278/unknown.png").queue();
             }
 
             else{

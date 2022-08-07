@@ -26,7 +26,7 @@ public class Bot{
                 // Other Events
                 .addEventListeners(new GenResponseEvent())
                 .addEventListeners(new JonEvent())
-                .addEventListeners(new ZabaEvent())
+                .addEventListeners(new PeriodicEvent())
 
                 .build();
     }

@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
 public class TagUserEvent extends ListenerAdapter {
+    // Gonna use this to annoy people eventually
     public void onMessageReceived(MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw().toLowerCase();
 
