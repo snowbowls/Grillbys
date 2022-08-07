@@ -384,6 +384,10 @@ public class ZabaEvent extends ListenerAdapter {
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("<:bowsette:510714047595806738> Today is " + mention + "'s birthday! <:2D:250844355429007370>").queue();
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("https://media.discordapp.net/attachments/261297258803363850/995463962516787232/Goose.png").queue();
             }
+            if(dates.get(today).toString().equals("Corey")){
+                Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("<:sus:802264386026340403> Today is " + mention + "'s birthday! <:justatheory:971167345437462589>").queue();
+                Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("https://cdn.discordapp.com/attachments/261297258803363850/997717479537246278/unknown.png").queue();
+            }
 
             else{
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("Today is " + mention + "'s birthday!").queue();
