@@ -270,7 +270,7 @@ public class PeriodicEvent extends ListenerAdapter {
 
         Guild guild = jda.getGuildById("816125354875944960");
         assert guild != null;
-        if(Math.random() > .95 || Math.random() < .05) {
+        if(Math.random() > .98 || Math.random() < .02) {
             Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nToday's mood is: **" + key + "**").addFile(new File("videos/moods/" + mood.get(key).toString())).queue();
             System.out.println("------------------- Mood: " + key);
         }

@@ -61,6 +61,9 @@ public class GenResponseEvent extends ListenerAdapter {
                 JSONObject genScan = (JSONObject) gen.get(String.valueOf(i));
                 String str = genScan.keySet().toString();
                 String key = str.substring(1, str.length() - 1);
+                if(key.equals("i wish i") && (Math.random() < .90)){
+                    break;
+                }
                 if (msg.contains(key)) {
                     System.out.println(key + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                     event.getChannel().sendMessage(genScan.get(key).toString()).queue();
