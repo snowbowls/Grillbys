@@ -282,20 +282,10 @@ public class SocialCreditEvent extends ListenerAdapter {
                         } catch (MongoException me) {
                             System.err.println("Unable to insert due to an error: " + me);
                         }
-                    } else {
-                        int currVal = doc.getInteger("score");
-                        doc.append("score", currVal - 15);
-                        System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " --> Reactor: " + reactor + " @" + event.getChannel().getName());
-                        try {
-                            Bson query = eq("userid", userid);
-                            ReplaceOptions opts = new ReplaceOptions().upsert(true);
-
-                            UpdateResult result = collection.replaceOne(query, doc, opts);
-                        } catch (MongoException me) {
-                            System.err.println("Unable to update due to an error: " + me);
-                        }
                     }
-                    if(event.getUser().getId().equals("251453431758192642") && userid.equals("944247658552385566")){
+
+                    // Some weird function I wrote to annoy Stein, I'm unsure why the second condition exists
+                    else if(event.getUser().getId().equals("null") && userid.equals("944247658552385566")){
                         JSONObject response = null;
                         JSONParser parser = new JSONParser();
                         JSONObject jsonObject = null;
@@ -308,23 +298,53 @@ public class SocialCreditEvent extends ListenerAdapter {
                             e.printStackTrace();
                         }
                         System.out.println("************************************************************");
-                        System.out.println(event.getUser().getName() + " had their family kidnapped!" );
+                        System.out.println(event.getUser().getName() + " had their credit score reduced" );
 
                         JSONObject finalResponse = response;
-                        if (Math.random() < .99)
+                        if (Math.random() < .80)
                             event.getJDA().getUserById(event.getUser().getId()).openPrivateChannel()
-                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("1").toString()))
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("4").toString()))
                                     .queue();
                         else {
                             event.getJDA().getUserById(event.getUser().getId()).openPrivateChannel()
-                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("2").toString()))
+                                    .flatMap(channel -> channel.sendMessage(finalResponse.get("3").toString()))
                                     .queue();
                             System.out.println(" U W U " );
                         }
 
 
                         System.out.println("************************************************************");
+
+                        Document doc1 = collection.find(eq("userid", "251453431758192642"))
+                                .projection(projectionFields)
+                                .first();
+
+                        int currVal = doc1.getInteger("score");
+                        doc1.append("score", currVal - 15);
+                        System.out.println(doc1.get("username") + "-> Old: " + currVal + " New " + doc1.getInteger("score") + " --> they attacked the CCP");
+                        try {
+                            Bson query = eq("userid", "251453431758192642");
+                            ReplaceOptions opts = new ReplaceOptions().upsert(true);
+
+                            UpdateResult result = collection.replaceOne(query, doc1, opts);
+                        } catch (MongoException me) {
+                            System.err.println("Unable to update due to an error: " + me);
+                        }
                     }
+                    else {
+                        int currVal = doc.getInteger("score");
+                        doc.append("score", currVal - 15);
+                        System.out.println(doc.get("username") + "-> Old: " + currVal + " New " + doc.getInteger("score") + " --> Reactor: " + reactor + " @" + event.getChannel().getName());
+                        try {
+                            Bson query = eq("userid", userid);
+                            ReplaceOptions opts = new ReplaceOptions().upsert(true);
+
+                            UpdateResult result = collection.replaceOne(query, doc, opts);
+                        } catch (MongoException me) {
+                            System.err.println("Unable to update due to an error: " + me);
+                        }
+                    }
+
                 }
             }
 
