@@ -26,10 +26,7 @@ import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 import java.util.logging.Level;
 
 public class PlayerControl extends ListenerAdapter
@@ -55,8 +52,8 @@ public class PlayerControl extends ListenerAdapter
         musicManagers = new HashMap<String, net.dv8tion.discord.music.GuildMusicManager>();
     }
 
-    //Prefix for all commands: .
-    //Example:  .play
+    //Prefix for all commands: !
+    //Example:  !play
     //Current commands
     // join [name]  - Joins a voice channel that has the provided name
     // join [id]    - Joins a voice channel based on the provided id.
@@ -77,6 +74,9 @@ public class PlayerControl extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
+        VoiceChannel connectedChannel = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+
+
         if (!event.isFromType(ChannelType.TEXT))
             return;
 
@@ -93,7 +93,7 @@ public class PlayerControl extends ListenerAdapter
         }
 
         String[] command = event.getMessage().getContentDisplay().split(" ", 2);
-        if (!command[0].startsWith("."))    //message doesn't start with prefix.
+        if (!command[0].startsWith("!"))    //message doesn't start with prefix.
             return;
 
         Guild guild = event.getGuild();
@@ -101,52 +101,47 @@ public class PlayerControl extends ListenerAdapter
         AudioPlayer player = mng.player;
         net.dv8tion.discord.music.TrackScheduler scheduler = mng.scheduler;
 
-        if (".join".equals(command[0]))
+        if ("!join".equals(command[0]))
         {
-            if (command.length == 1) //No channel name was provided to search for.
-            {
-                event.getChannel().sendMessage("No channel name was provided to search with to join.").queue();
+            if(connectedChannel == null) {
+                event.getChannel().sendMessage("You are not connected to a voice channel!").queue();
             }
             else
             {
                 VoiceChannel chan = null;
                 try
                 {
-                    chan = guild.getVoiceChannelById(command[1]);
+                    chan = connectedChannel;
                 }
                 catch (NumberFormatException ignored) {}
+                guild.getAudioManager().setSendingHandler(mng.sendHandler);
 
-                if (chan == null)
-                    chan = guild.getVoiceChannelsByName(command[1], true).stream().findFirst().orElse(null);
-                if (chan == null)
+                try
                 {
-                    event.getChannel().sendMessage("Could not find VoiceChannel by name: " + command[1]).queue();
+                    guild.getAudioManager().openAudioConnection(chan);
                 }
-                else
+                catch (PermissionException e)
                 {
-                    guild.getAudioManager().setSendingHandler(mng.sendHandler);
-
-                    try
+                    if (e.getPermission() == Permission.VOICE_CONNECT)
                     {
-                        guild.getAudioManager().openAudioConnection(chan);
-                    }
-                    catch (PermissionException e)
-                    {
-                        if (e.getPermission() == Permission.VOICE_CONNECT)
-                        {
-                            event.getChannel().sendMessage("Yui does not have permission to connect to: " + chan.getName()).queue();
-                        }
+                        event.getChannel().sendMessage("Zaba does not have permission to connect to: " + chan.getName()).queue();
                     }
                 }
+
             }
         }
-        else if (".leave".equals(command[0]))
+        else if ("!leave".equals(command[0]))
         {
             guild.getAudioManager().setSendingHandler(null);
             guild.getAudioManager().closeAudioConnection();
         }
-        else if (".play".equals(command[0]))
+        else if ("!play".equals(command[0]))
         {
+            if(connectedChannel == null) event.getChannel().sendMessage("You are not connected to a voice channel!").queue();
+            if(!guild.getAudioManager().isConnected()){
+                guild.getAudioManager().setSendingHandler(mng.sendHandler);
+                guild.getAudioManager().openAudioConnection(connectedChannel);
+            }
             if (command.length == 1) //It is only the command to start playback (probably after pause)
             {
                 if (player.isPaused())
@@ -163,21 +158,21 @@ public class PlayerControl extends ListenerAdapter
                     event.getChannel().sendMessage("The current audio queue is empty! Add something to the queue first!").queue();
                 }
             }
-            else    //Commands has 2 parts, .play and url.
+            else    //Commands has 2 parts, !play and url.
             {
                 loadAndPlay(mng, event.getChannel(), command[1], false);
             }
         }
-        else if (".pplay".equals(command[0]) && command.length == 2)
+        else if ("!pplay".equals(command[0]) && command.length == 2)
         {
             loadAndPlay(mng, event.getChannel(), command[1], true);
         }
-        else if (".skip".equals(command[0]))
+        else if ("!skip".equals(command[0]))
         {
             scheduler.nextTrack();
             event.getChannel().sendMessage("The current track was skipped.").queue();
         }
-        else if (".pause".equals(command[0]))
+        else if ("!pause".equals(command[0]))
         {
             if (player.getPlayingTrack() == null)
             {
@@ -191,14 +186,14 @@ public class PlayerControl extends ListenerAdapter
             else
                 event.getChannel().sendMessage("The player has resumed playing.").queue();
         }
-        else if (".stop".equals(command[0]))
+        else if ("!stop".equals(command[0]))
         {
             scheduler.queue.clear();
             player.stopTrack();
             player.setPaused(false);
             event.getChannel().sendMessage("Playback has been completely stopped and the queue has been cleared.").queue();
         }
-        else if (".volume".equals(command[0]))
+        else if ("!volume".equals(command[0]))
         {
             if (command.length == 1)
             {
@@ -219,7 +214,7 @@ public class PlayerControl extends ListenerAdapter
                 }
             }
         }
-        else if (".restart".equals(command[0]))
+        else if ("!restart".equals(command[0]))
         {
             AudioTrack track = player.getPlayingTrack();
             if (track == null)
@@ -235,12 +230,12 @@ public class PlayerControl extends ListenerAdapter
                 event.getChannel().sendMessage("No track has been previously started, so the player cannot replay a track!").queue();
             }
         }
-        else if (".repeat".equals(command[0]))
+        else if ("!repeat".equals(command[0]))
         {
             scheduler.setRepeating(!scheduler.isRepeating());
             event.getChannel().sendMessage("Player was set to: **" + (scheduler.isRepeating() ? "repeat" : "not repeat") + "**").queue();
         }
-        else if (".reset".equals(command[0]))
+        else if ("!reset".equals(command[0]))
         {
             synchronized (musicManagers)
             {
@@ -255,7 +250,7 @@ public class PlayerControl extends ListenerAdapter
             event.getChannel().sendMessage("The player has been completely reset!").queue();
 
         }
-        else if (".nowplaying".equals(command[0]) || ".np".equals(command[0]))
+        else if ("!nowplaying".equals(command[0]) || ".np".equals(command[0]))
         {
             AudioTrack currentTrack = player.getPlayingTrack();
             if (currentTrack != null)
@@ -272,7 +267,7 @@ public class PlayerControl extends ListenerAdapter
             else
                 event.getChannel().sendMessage("The player is not currently playing anything!").queue();
         }
-        else if (".list".equals(command[0]))
+        else if ("!list".equals(command[0]))
         {
             Queue<AudioTrack> queue = scheduler.queue;
             synchronized (queue)
@@ -303,7 +298,7 @@ public class PlayerControl extends ListenerAdapter
                 }
             }
         }
-        else if (".shuffle".equals(command[0]))
+        else if ("!shuffle".equals(command[0]))
         {
             if (scheduler.queue.isEmpty())
             {
