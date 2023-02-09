@@ -34,6 +34,7 @@ public class PeriodicEvent extends ListenerAdapter {
     // Scheduler
     public void onReady(@NotNull ReadyEvent event) {
         fridayScheduling(event.getJDA());
+        holidayScheduler(event.getJDA());
         moodScheduler(event.getJDA());
         birthdayScheduler(event.getJDA());
         statusSet(event.getJDA());
@@ -276,6 +277,47 @@ public class PeriodicEvent extends ListenerAdapter {
         }
         else{
             System.out.println("------------------- No mood for today");
+        }
+    }
+    public void holidayScheduler(JDA jda){
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
+        ZonedDateTime nextFirstLesson = now.withHour(7).withMinute(0).withSecond(0);
+        if (now.compareTo(nextFirstLesson) > 0) {
+            nextFirstLesson = nextFirstLesson.plusDays(1);
+        }
+        Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
+        long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
+
+        ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
+        schedulerFirstLesson.scheduleAtFixedRate(() -> holidayPosting(jda),
+                initialDelayFirstLesson,
+                TimeUnit.DAYS.toSeconds(1),
+                TimeUnit.SECONDS);
+    }
+    public void holidayPosting(JDA jda) {
+        String chatID = "816125354875944964";
+        String today = LocalDate.now().toString().substring(5);
+
+        JSONParser parser = new JSONParser();
+        JSONObject jsonObject;
+
+        // Load JSON
+        JSONObject dates = null;
+        JSONObject poi = null;
+        try {
+            Object obj = parser.parse(new FileReader("keywords.json"));
+            jsonObject = (JSONObject) obj;
+            dates = (JSONObject) jsonObject.get("holidays");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        assert dates != null;
+        Set<String> holidays = dates.keySet();
+        if(holidays.contains(today)) {
+            Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("Behold, everyone..").queue();
+            Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage(dates.get(today).toString()).queue();
+            System.out.print(dates.get(today).toString());
         }
     }
     public void birthdayScheduler(JDA jda){
