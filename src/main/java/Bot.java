@@ -24,7 +24,7 @@ public class Bot{
                 // Social Credit Events
                 .addEventListeners(new SocialCreditEvent())
                 // Audio Player Events
-                .addEventListeners(new AudioHandlerEvent())
+                .addEventListeners(new net.dv8tion.discord.music.PlayerControl())
 
                 // Other Events
                 .addEventListeners(new GenResponseEvent())
