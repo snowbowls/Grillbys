@@ -1,4 +1,4 @@
-package net.dv8tion.discord.music;
+package events;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
@@ -7,7 +7,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.soundcloud.SoundCloudAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
 import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
@@ -34,7 +33,7 @@ public class PlayerControl extends ListenerAdapter
     public static final int DEFAULT_VOLUME = 35; //(0 - 150, where 100 is default max volume)
 
     private final AudioPlayerManager playerManager;
-    private final Map<String, net.dv8tion.discord.music.GuildMusicManager> musicManagers;
+    private final Map<String, GuildMusicManager> musicManagers;
 
     public PlayerControl()
     {
@@ -42,14 +41,14 @@ public class PlayerControl extends ListenerAdapter
 
         this.playerManager = new DefaultAudioPlayerManager();
         playerManager.registerSourceManager(new YoutubeAudioSourceManager());
-        //layerManager.registerSourceManager(new SoundCloudAudioSourceManager());
+        //playerManager.registerSourceManager(new SoundCloudAudioSourceManager());
         playerManager.registerSourceManager(new BandcampAudioSourceManager());
         playerManager.registerSourceManager(new VimeoAudioSourceManager());
         playerManager.registerSourceManager(new TwitchStreamAudioSourceManager());
         playerManager.registerSourceManager(new HttpAudioSourceManager());
         playerManager.registerSourceManager(new LocalAudioSourceManager());
 
-        musicManagers = new HashMap<String, net.dv8tion.discord.music.GuildMusicManager>();
+        musicManagers = new HashMap<String, GuildMusicManager>();
     }
 
     //Prefix for all commands: !
@@ -97,9 +96,9 @@ public class PlayerControl extends ListenerAdapter
             return;
 
         Guild guild = event.getGuild();
-        net.dv8tion.discord.music.GuildMusicManager mng = getMusicManager(guild);
+        GuildMusicManager mng = getMusicManager(guild);
         AudioPlayer player = mng.player;
-        net.dv8tion.discord.music.TrackScheduler scheduler = mng.scheduler;
+        TrackScheduler scheduler = mng.scheduler;
 
         if ("!join".equals(command[0]))
         {
@@ -311,7 +310,7 @@ public class PlayerControl extends ListenerAdapter
         }
     }
 
-    private void loadAndPlay(net.dv8tion.discord.music.GuildMusicManager mng, final MessageChannel channel, String url, final boolean addPlaylist)
+    private void loadAndPlay(GuildMusicManager mng, final MessageChannel channel, String url, final boolean addPlaylist)
     {
         final String trackUrl;
 
@@ -328,7 +327,7 @@ public class PlayerControl extends ListenerAdapter
             {
                 String msg = "Adding to queue: " + track.getInfo().title;
                 if (mng.player.getPlayingTrack() == null)
-                    msg += "\nand the Player has started playing;";
+                    msg += "\nand the bot has started playing;";
 
                 mng.scheduler.queue(track);
                 channel.sendMessage(msg).queue();
@@ -371,10 +370,10 @@ public class PlayerControl extends ListenerAdapter
         });
     }
 
-    private net.dv8tion.discord.music.GuildMusicManager getMusicManager(Guild guild)
+    private GuildMusicManager getMusicManager(Guild guild)
     {
         String guildId = guild.getId();
-        net.dv8tion.discord.music.GuildMusicManager mng = musicManagers.get(guildId);
+        GuildMusicManager mng = musicManagers.get(guildId);
         if (mng == null)
         {
             synchronized (musicManagers)
@@ -382,7 +381,7 @@ public class PlayerControl extends ListenerAdapter
                 mng = musicManagers.get(guildId);
                 if (mng == null)
                 {
-                    mng = new net.dv8tion.discord.music.GuildMusicManager(playerManager);
+                    mng = new GuildMusicManager(playerManager);
                     mng.player.setVolume(DEFAULT_VOLUME);
                     musicManagers.put(guildId, mng);
                 }

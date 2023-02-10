@@ -1,4 +1,3 @@
-import com.sedmelluq.discord.lavaplayer.player.event.AudioEvent;
 import events.*;
 import net.dv8tion.jda.api.JDABuilder;
 import io.github.cdimascio.dotenv.Dotenv;
@@ -24,7 +23,7 @@ public class Bot{
                 // Social Credit Events
                 .addEventListeners(new SocialCreditEvent())
                 // Audio Player Events
-                .addEventListeners(new net.dv8tion.discord.music.PlayerControl())
+                .addEventListeners(new PlayerControl())
 
                 // Other Events
                 .addEventListeners(new GenResponseEvent())

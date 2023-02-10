@@ -1,4 +1,4 @@
-package net.dv8tion.discord.music;
+package events;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
@@ -14,11 +14,11 @@ public class GuildMusicManager {
     /**
      * Track scheduler for the player.
      */
-    public final net.dv8tion.discord.music.TrackScheduler scheduler;
+    public final TrackScheduler scheduler;
     /**
      * Wrapper around AudioPlayer to use it as an AudioSendHandler.
      */
-    public final net.dv8tion.discord.music.AudioPlayerSendHandler sendHandler;
+    public final AudioPlayerSendHandler sendHandler;
 
     /**
      * Creates a player and a track scheduler.
@@ -27,8 +27,8 @@ public class GuildMusicManager {
     public GuildMusicManager(AudioPlayerManager manager)
     {
         player = manager.createPlayer();
-        scheduler = new net.dv8tion.discord.music.TrackScheduler(player);
-        sendHandler = new net.dv8tion.discord.music.AudioPlayerSendHandler(player);
+        scheduler = new TrackScheduler(player);
+        sendHandler = new AudioPlayerSendHandler(player);
         player.addListener(scheduler);
     }
 }
