@@ -1,12 +1,16 @@
 package events;
 
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class GenResponseEvent extends ListenerAdapter {
@@ -16,12 +20,52 @@ public class GenResponseEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         String msg = event.getMessage().getContentRaw().toLowerCase();
         if(msg.equalsIgnoreCase(("!help"))){
-            event.getChannel().sendMessage(""
-                    + "\n   "
-                    + "\n   "
-                    + "\n   ").queue();
-            return;
 
+            List<String> command = new ArrayList<>();
+            List<String> use = new ArrayList<>();
+
+            StringBuilder commands = new StringBuilder();
+            StringBuilder uses = new StringBuilder();
+            EmbedBuilder eb = new EmbedBuilder();
+            eb.setThumbnail("https://images-ext-1.discordapp.net/external/HwnSW1Qv1B0_ZkomUohZ7P-TYmFsX775K0H4CdQRbAw/https/e0.pxfuel.com/wallpapers/940/704/desktop-wallpaper-glass-animals-zaba-artwork-by-micah-lidberg-glass-animals-pool-thumbnail.jpg");
+            eb.setTitle("Zaba", null);
+            eb.setColor(new Color(114, 41, 54));
+
+            command.add("!play\n");
+            use.add("Adds or plays songs from the current queue\n");
+            command.add("!leave\n");
+            use.add("Leaves the voice channel\n");
+            command.add("!pplay\n");
+            use.add("Adds a playlist to the queue\n");
+            command.add("!pause\n");
+            use.add("Pauses audio playback\n");
+            command.add("!stop\n");
+            use.add("Completely stops audio playback\n");
+            command.add("!skip\n");
+            use.add("Skips the current song\n");
+            command.add("!nowplaying\n");
+            use.add("Prints information about the current song\n");
+            command.add("!np\n");
+            use.add("Alias for nowplaying\n");
+            command.add("!list\n");
+            use.add("Lists the songs in the queue\n");
+            command.add("!volume [val]\n");
+            use.add("Sets the volume of the MusicPlayer [10 - 100]\n");
+            command.add("!restart\n");
+            use.add("Restarts the current song\n");
+            command.add("!repeat\n");
+            use.add("Makes the player repeat the currently playing song\n");
+            command.add("!reset\n");
+            use.add("Completely resets the player for a quick fix\n");
+
+            for(String s : command)
+                commands.append(s);
+            for(String s: use)
+                uses.append(s);
+
+            eb.addField("Command", commands.toString(), true);
+            eb.addField("Function", uses.toString(), true);
+            event.getChannel().sendMessage(eb.build()).queue();
         }
         else if(msg.equals("!explain") || msg.equals("tell 'em zaba")){
             event.getChannel().sendMessage("多黨制\t\t**Social Credit - How to perform your 中国共产党 Duty**"
