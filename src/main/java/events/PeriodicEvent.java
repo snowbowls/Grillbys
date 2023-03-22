@@ -8,9 +8,11 @@ import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.events.ReadyEvent;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.jetbrains.annotations.NotNull;
@@ -19,13 +21,14 @@ import org.json.simple.parser.JSONParser;
 
 import java.io.File;
 import java.io.FileReader;
-import java.time.*;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-
-import static com.mongodb.client.model.Filters.eq;
 
 public class PeriodicEvent extends ListenerAdapter {
     // PeriodicEvents are for routine functions based on time
@@ -38,6 +41,7 @@ public class PeriodicEvent extends ListenerAdapter {
         moodScheduler(event.getJDA());
         birthdayScheduler(event.getJDA());
         statusSet(event.getJDA());
+        leaveServer(event.getJDA());
         //creditCheckScheduler(event.getJDA());
     }
     public void statusSet(JDA jda){
@@ -222,10 +226,14 @@ public class PeriodicEvent extends ListenerAdapter {
         String rng = String.valueOf(rand);
         String meme= friday.get(rng).toString();
 
-        if(Math.random() < .20) {
-            Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
-            Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
-            Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
+        if(Math.random() < .92) {
+            MessageCreateData data = new MessageCreateBuilder()
+                    .setContent("Behold, everyone! \\nIt's **Friday**")
+                    .setFiles(FileUpload.fromData(new File("videos/friday/"  + meme)))
+                    .build();
+            Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage(data).queue();
+            Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage(data).queue();
+            //Objects.requireNonNull(jda.getTextChannelById("165246172892495872")).sendMessage("Behold, everyone! \nIt's **Friday**").addFile(new File("videos/friday/" + meme)).queue();
             System.out.println("------------------- Friday: " + meme);
         }
         else{
@@ -272,7 +280,7 @@ public class PeriodicEvent extends ListenerAdapter {
         Guild guild = jda.getGuildById("816125354875944960");
         assert guild != null;
         if(Math.random() > .98 || Math.random() < .02) {
-            Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nToday's mood is: **" + key + "**").addFile(new File("videos/moods/" + mood.get(key).toString())).queue();
+            //Objects.requireNonNull(jda.getTextChannelById("816125354875944964")).sendMessage("Behold, everyone! \nToday's mood is: **" + key + "**").addFiles((Collection<? extends FileUpload>) new File("videos/moods/" + mood.get(key).toString())).queue();
             System.out.println("------------------- Mood: " + key);
         }
         else{
@@ -281,16 +289,16 @@ public class PeriodicEvent extends ListenerAdapter {
     }
     public void holidayScheduler(JDA jda){
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
-        ZonedDateTime nextFirstLesson = now.withHour(7).withMinute(0).withSecond(0);
-        if (now.compareTo(nextFirstLesson) > 0) {
-            nextFirstLesson = nextFirstLesson.plusDays(1);
+        ZonedDateTime next = now.withHour(7).withMinute(0).withSecond(0);
+        if (now.compareTo(next) > 0) {
+            next = next.plusDays(1);
         }
-        Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
-        long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
+        Duration durationUntil = Duration.between(now, next);
+        long initialDelay = durationUntil.getSeconds();
 
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
         schedulerFirstLesson.scheduleAtFixedRate(() -> holidayPosting(jda),
-                initialDelayFirstLesson,
+                initialDelay,
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS);
     }
@@ -322,16 +330,16 @@ public class PeriodicEvent extends ListenerAdapter {
     }
     public void birthdayScheduler(JDA jda){
         ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
-        ZonedDateTime nextFirstLesson = now.withHour(8).withMinute(0).withSecond(0);
-        if (now.compareTo(nextFirstLesson) > 0) {
-            nextFirstLesson = nextFirstLesson.plusDays(1);
+        ZonedDateTime next = now.withHour(8).withMinute(0).withSecond(0);
+        if (now.compareTo(next) > 0) {
+            next = next.plusDays(1);
         }
-        Duration durationUntilFirstLesson = Duration.between(now, nextFirstLesson);
-        long initialDelayFirstLesson = durationUntilFirstLesson.getSeconds();
+        Duration durationUntilFirstLesson = Duration.between(now, next);
+        long initialDelay = durationUntilFirstLesson.getSeconds();
 
         ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
         schedulerFirstLesson.scheduleAtFixedRate(() -> birthdayPosting(jda),
-                initialDelayFirstLesson,
+                initialDelay,
                 TimeUnit.DAYS.toSeconds(1),
                 TimeUnit.SECONDS);
     }
@@ -398,5 +406,26 @@ public class PeriodicEvent extends ListenerAdapter {
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("Today is " + mention + "'s birthday!").queue();
             }
         }
+    }
+    public void leaveServer(JDA jda) {
+        ZonedDateTime now = ZonedDateTime.now(ZoneId.of("US/Eastern"));
+        ZonedDateTime next = now.withHour(3).withMinute(0).withSecond(0);
+        if (now.compareTo(next) > 0) {
+            next = next.plusDays(1);
+        }
+        Duration durationUntil = Duration.between(now, next);
+        long initialDelay = durationUntil.getSeconds();
+
+        ScheduledExecutorService schedulerFirstLesson = Executors.newScheduledThreadPool(1);
+        schedulerFirstLesson.scheduleAtFixedRate(() -> {
+                    System.out.println("It's 3 AM!");
+                    jda.getGuildById("816125354875944960").getAudioManager().setSendingHandler(null);
+                    jda.getGuildById("816125354875944960").getAudioManager().closeAudioConnection();
+
+                },
+                initialDelay,
+                TimeUnit.DAYS.toSeconds(1),
+                TimeUnit.SECONDS);
+
     }
 }

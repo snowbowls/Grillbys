@@ -13,21 +13,21 @@ import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageReaction;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
-import org.jetbrains.annotations.NotNull;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.awt.*;
 import java.io.FileReader;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -106,6 +106,7 @@ public class SocialCreditEvent extends ListenerAdapter {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
                     try {
+
                         Bson projectionFields = Projections.fields(
                                 Projections.include("username", "userid", "score"),
                                 Projections.excludeId());
@@ -127,7 +128,10 @@ public class SocialCreditEvent extends ListenerAdapter {
 
                             eb.addField("Username  统一社会信用代码 ", sbUser.toString(), true);
                             eb.addField("Social Credit 社会信用评分", sbCredit.toString(), true);
-                            event.getChannel().sendMessage(eb.build()).queue();
+                            MessageCreateData data = new MessageCreateBuilder()
+                                    .addEmbeds(eb.build())
+                                    .build();
+                            event.getChannel().sendMessage(data).queue();
                         }
                     } catch (MongoException me) {
                         System.err.println("ERROR");
@@ -204,7 +208,7 @@ public class SocialCreditEvent extends ListenerAdapter {
                         .build())
                 .build();
         try{
-            String s = event.getReactionEmote().getId();
+            String s = String.valueOf(event.getEmoji());
             isCustom = true;
 
         }
@@ -214,9 +218,9 @@ public class SocialCreditEvent extends ListenerAdapter {
 
         if(isCustom) {
             // ----- CREDIT SCORE -----
-            String readId = event.getReactionEmote().getId();
+            String readId = event.getEmoji().getAsReactionCode();
             // Trigger when message add react +15
-            if (readId.equals("900119408859578451") && !username.equals(reactor)) {
+            if (readId.equals("15_plus:900119408859578451") && !username.equals(reactor)) {
                 try (MongoClient mongoClient = MongoClients.create(settings)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                     MongoCollection<Document> collection = database.getCollection("socialcredit");
@@ -258,7 +262,7 @@ public class SocialCreditEvent extends ListenerAdapter {
             }
 
             // Trigger when message add react -15
-            if (readId.equals("934919187787288597") && !username.equals(reactor)) {
+            if (readId.equals("15_neg:934919187787288597") && !username.equals(reactor)) {
 
                 try (MongoClient mongoClient = MongoClients.create(settings)) {
                     MongoDatabase database = mongoClient.getDatabase("ChillGrill");
@@ -349,7 +353,7 @@ public class SocialCreditEvent extends ListenerAdapter {
             }
 
             // Count num of reacts for +15
-            if (readId.equals("900119408859578451")) {
+            if (readId.equals("15_plus:900119408859578451")) {
 
                 List<MessageReaction> reactionsList = msg.getReactions();
                 List<User> users = null;
@@ -363,12 +367,12 @@ public class SocialCreditEvent extends ListenerAdapter {
                 int cnt = users.size(); // Num of react
 
                 if (cnt >= 2) {
-                    msg.addReaction(jiApprove).queue();
+                    msg.addReaction(Emoji.fromUnicode(jiApprove)).queue();
                 }
             }
 
             // Count num of reacts for -15
-            if (readId.equals("934919187787288597")) {
+            if (readId.equals("15_neg:934919187787288597")) {
 
                 List<MessageReaction> reactionsList = msg.getReactions();
                 List<User> users = null;
@@ -382,18 +386,18 @@ public class SocialCreditEvent extends ListenerAdapter {
                 int cnt = users.size(); // Num of react
 
                 if (cnt >= 2) {
-                    msg.addReaction(jiCondemn).queue();
+                    msg.addReaction(Emoji.fromUnicode(jiCondemn)).queue();
                 }
             }
 
             // ----- OTHER -----
 
-            if (readId.equals("887861940012085288")) {
-                msg.addReaction("soy_point:887860865439789086").queue();
+            if (readId.equals("soy_pog:887861940012085288")) {
+                msg.addReaction(Emoji.fromUnicode("soy_point:887860865439789086")).queue();
             }
 
-            if (readId.equals("802264386026340403")) {
-                msg.addReaction("sus:802264386026340403").queue();
+            if (readId.equals("sus:802264386026340403")) {
+                msg.addReaction(Emoji.fromUnicode("sus:802264386026340403")).queue();
             }
         }
 
@@ -415,7 +419,7 @@ public class SocialCreditEvent extends ListenerAdapter {
                 .build();
 
         try{
-            String s = event.getReactionEmote().getId();
+            String s = String.valueOf(event.getEmoji());
             isCustom = true;
 
         }
@@ -426,7 +430,7 @@ public class SocialCreditEvent extends ListenerAdapter {
         if(isCustom) {
             {
                 // Trigger when message rem react +15
-                if (event.getReactionEmote().getId().equals("900119408859578451") && !username.equals(reactor)) {
+                if (event.getEmoji().getAsReactionCode().equals("15_plus:900119408859578451") && !username.equals(reactor)) {
                     try (MongoClient mongoClient = MongoClients.create(settings)) {
                         MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                         MongoCollection<Document> collection = database.getCollection("socialcredit");
@@ -455,7 +459,7 @@ public class SocialCreditEvent extends ListenerAdapter {
                 }
 
                 // Trigger when message rem react -15
-                if (event.getReactionEmote().getId().equals("934919187787288597") && !username.equals(reactor)) {
+                if (event.getEmoji().getAsReactionCode().equals("15_neg:934919187787288597") && !username.equals(reactor)) {
                     try (MongoClient mongoClient = MongoClients.create(settings)) {
                         MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                         MongoCollection<Document> collection = database.getCollection("socialcredit");

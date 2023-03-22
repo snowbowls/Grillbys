@@ -14,10 +14,10 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.MessageChannel;
-import net.dv8tion.jda.api.entities.VoiceChannel;
+import net.dv8tion.jda.api.entities.channel.Channel;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
+import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -34,6 +34,10 @@ public class PlayerControl extends ListenerAdapter
 
     private final AudioPlayerManager playerManager;
     private final Map<String, GuildMusicManager> musicManagers;
+
+    private Timer timer;
+    private TimerTask timerTask;
+    private boolean hasStarted = false;
 
     public PlayerControl()
     {
@@ -73,9 +77,11 @@ public class PlayerControl extends ListenerAdapter
     @Override
     public void onMessageReceived(MessageReceivedEvent event)
     {
-        VoiceChannel connectedChannel = Objects.requireNonNull(Objects.requireNonNull(event.getMember()).getVoiceState()).getChannel();
+        Channel connectedChannel = event.getMember().getVoiceState().getChannel();
+        //MessageChannelUnion channel = event.getChannel();
+        //VoiceChannel connectedChannel = channel.asVoiceChannel();
 
-
+        //VoiceChannel voiceChannel = event.getGuild().getVoiceChannelById("1073341579097550929");
         if (!event.isFromType(ChannelType.TEXT))
             return;
 
@@ -107,7 +113,7 @@ public class PlayerControl extends ListenerAdapter
             }
             else
             {
-                VoiceChannel chan = null;
+                Channel chan = null;
                 try
                 {
                     chan = connectedChannel;
@@ -117,7 +123,7 @@ public class PlayerControl extends ListenerAdapter
 
                 try
                 {
-                    guild.getAudioManager().openAudioConnection(chan);
+                    guild.getAudioManager().openAudioConnection((AudioChannel) connectedChannel);
                 }
                 catch (PermissionException e)
                 {
@@ -136,10 +142,14 @@ public class PlayerControl extends ListenerAdapter
         }
         else if ("!play".equals(command[0]))
         {
+            if(hasStarted){
+                timerTask.cancel();
+                hasStarted = false;
+            }
             if(connectedChannel == null) event.getChannel().sendMessage("You are not connected to a voice channel!").queue();
             if(!guild.getAudioManager().isConnected()){
                 guild.getAudioManager().setSendingHandler(mng.sendHandler);
-                guild.getAudioManager().openAudioConnection(connectedChannel);
+                guild.getAudioManager().openAudioConnection((AudioChannel) connectedChannel);
             }
             if (command.length == 1) //It is only the command to start playback (probably after pause)
             {
@@ -159,12 +169,13 @@ public class PlayerControl extends ListenerAdapter
             }
             else    //Commands has 2 parts, !play and url.
             {
-                loadAndPlay(mng, event.getChannel(), command[1], false);
+                loadAndPlay(mng, event.getChannel(), command[1], false, event);
             }
         }
         else if ("!pplay".equals(command[0]) && command.length == 2)
         {
-            loadAndPlay(mng, event.getChannel(), command[1], true);
+            timerTask.cancel();
+            loadAndPlay(mng, event.getChannel(), command[1], true, event);
         }
         else if ("!skip".equals(command[0]))
         {
@@ -191,6 +202,7 @@ public class PlayerControl extends ListenerAdapter
             player.stopTrack();
             player.setPaused(false);
             event.getChannel().sendMessage("Playback has been completely stopped and the queue has been cleared.").queue();
+            hasStarted = true;
         }
         else if ("!volume".equals(command[0]))
         {
@@ -249,7 +261,7 @@ public class PlayerControl extends ListenerAdapter
             event.getChannel().sendMessage("The player has been completely reset!").queue();
 
         }
-        else if ("!nowplaying".equals(command[0]) || ".np".equals(command[0]))
+        else if ("!nowplaying".equals(command[0]) || "!np".equals(command[0]))
         {
             AudioTrack currentTrack = player.getPlayingTrack();
             if (currentTrack != null)
@@ -310,7 +322,7 @@ public class PlayerControl extends ListenerAdapter
         }
     }
 
-    private void loadAndPlay(GuildMusicManager mng, final MessageChannel channel, String url, final boolean addPlaylist)
+    private void loadAndPlay(GuildMusicManager mng, final Channel channel, String url, final boolean addPlaylist, MessageReceivedEvent event)
     {
         final String trackUrl;
 
@@ -330,7 +342,8 @@ public class PlayerControl extends ListenerAdapter
                     msg += "\nand the bot has started playing;";
 
                 mng.scheduler.queue(track);
-                channel.sendMessage(msg).queue();
+                event.getChannel().sendMessage(msg).queue();
+
             }
 
             @Override
@@ -346,12 +359,12 @@ public class PlayerControl extends ListenerAdapter
 
                 if (addPlaylist)
                 {
-                    channel.sendMessage("Adding **" + playlist.getTracks().size() +"** tracks to queue from playlist: " + playlist.getName()).queue();
+                    event.getChannel().sendMessage("Adding **" + playlist.getTracks().size() +"** tracks to queue from playlist: " + playlist.getName()).queue();
                     tracks.forEach(mng.scheduler::queue);
                 }
                 else
                 {
-                    channel.sendMessage("Adding to queue " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
+                    event.getChannel().sendMessage("Adding to queue " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
                     mng.scheduler.queue(firstTrack);
                 }
             }
@@ -359,13 +372,13 @@ public class PlayerControl extends ListenerAdapter
             @Override
             public void noMatches()
             {
-                channel.sendMessage("Nothing found by " + trackUrl).queue();
+                event.getChannel().sendMessage("Nothing found by " + trackUrl).queue();
             }
 
             @Override
             public void loadFailed(FriendlyException exception)
             {
-                channel.sendMessage("Could not play: " + exception.getMessage()).queue();
+                event.getChannel().sendMessage("Could not play: " + exception.getMessage()).queue();
             }
         });
     }
@@ -401,5 +414,4 @@ public class PlayerControl extends ListenerAdapter
         else
             return String.format("%02d:%02d", minutes, seconds);
     }
-
 }

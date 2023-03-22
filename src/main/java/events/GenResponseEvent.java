@@ -1,8 +1,12 @@
 package events;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.utils.FileUpload;
+import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
+import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -65,7 +69,10 @@ public class GenResponseEvent extends ListenerAdapter {
 
             eb.addField("Command", commands.toString(), true);
             eb.addField("Function", uses.toString(), true);
-            event.getChannel().sendMessage(eb.build()).queue();
+            MessageCreateData data = new MessageCreateBuilder()
+                    .addEmbeds(eb.build())
+                    .build();
+            event.getChannel().sendMessage(data).queue();
         }
         else if(msg.equals("!explain") || msg.equals("tell 'em zaba")){
             event.getChannel().sendMessage("多黨制\t\t**Social Credit - How to perform your 中国共产党 Duty**"
@@ -89,8 +96,8 @@ public class GenResponseEvent extends ListenerAdapter {
                 Object obj = parser.parse(new FileReader("keywords.json"));
                 jsonObject = (JSONObject) obj;
                 gen = (JSONObject) jsonObject.get("general");
-                genCom = (JSONObject) jsonObject.get("generalComplex");
                 genEx = (JSONObject) jsonObject.get("generalExact");
+                genCom = (JSONObject) jsonObject.get("generalComplex");
                 mto = (JSONObject) jsonObject.get("manyToOne");
                 genEm = (JSONObject) jsonObject.get("generalEmote");
                 emoteList = (JSONObject) jsonObject.get("emotes");
@@ -101,18 +108,23 @@ public class GenResponseEvent extends ListenerAdapter {
             }
 
             assert gen != null;
-            for (int i = 1; i <= gen.size(); i++) {
-                JSONObject genScan = (JSONObject) gen.get(String.valueOf(i));
-                String str = genScan.keySet().toString();
-                String key = str.substring(1, str.length() - 1);
-                if(key.equals("i wish i") && (Math.random() < .90)){
-                    break;
-                }
-                if (msg.contains(key)) {
-                    System.out.println(key + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-                    event.getChannel().sendMessage(genScan.get(key).toString()).queue();
+            Set<String> scanGen = gen.keySet();
+            for (String str : scanGen) {
+                if(msg.contains(str)){
+                    System.out.println( " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
+                    event.getChannel().sendMessage(gen.get(str).toString()).queue();
                 }
             }
+
+            assert genEx != null;
+            Set<String> scanGenEx = genEx.keySet();
+            for (String str : scanGenEx) {
+                if(msg.equals(str)){
+                    System.out.println( " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
+                    event.getChannel().sendMessage(genEx.get(msg).toString()).queue();
+                }
+            }
+
 
             assert genCom != null;
             for (int i = 1; i <= genCom.size(); i++){
@@ -127,33 +139,29 @@ public class GenResponseEvent extends ListenerAdapter {
                     if(key.equals("uwu")) {
                         if (Math.random() > .65) {
                             System.out.println(key + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-                            event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
+                            MessageCreateData data = new MessageCreateBuilder()
+                                    .setFiles(FileUpload.fromData(new File("videos/" + genScan.get(key) + "/" + meme)))
+                                    .build();
+                            event.getChannel().sendMessage(data).queue();
                         }
                     }
                     else {
                         System.out.println(key + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-                        event.getChannel().sendMessage(" ").addFile(new File("videos/" + genScan.get(key) + "/" + meme)).queue();
+                        MessageCreateData data = new MessageCreateBuilder()
+                                .setFiles(FileUpload.fromData(new File("videos/" + genScan.get(key) + "/" + meme)))
+                                .build();
+                        event.getChannel().sendMessage(data).queue();
                     }
                 }
             }
 
-            assert genEx != null;
-            Set<String> scan = genEx.keySet();
-            if(scan.contains(msg)){
-                System.out.println( " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-                event.getChannel().sendMessage(genEx.get(msg).toString()).queue();
-            }
-
             assert genEm != null;
             assert emoteList != null;
-            for (int i = 1; i <= genEm.size(); i++){
-                JSONObject genScan = (JSONObject) genEm.get(String.valueOf(i));
-                String str = genScan.keySet().toString();
-                String key = str.substring(1, str.length() - 1);
-                if (msg.contains(key)) {
-                    String emoteKey = genScan.get(key).toString();
-                    String emote = emoteList.get(emoteKey).toString();
-                    event.getMessage().addReaction(emote).queue();
+            Set<String> scanGenEm = genEm.keySet();
+            for (String str : scanGenEm) {
+                if(msg.contains(str)){
+                    String emote = emoteList.get(genEm.get(str)).toString();
+                    event.getMessage().addReaction(Emoji.fromUnicode(emote)).queue();
                 }
             }
 

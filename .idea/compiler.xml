@@ -12,5 +12,8 @@
         <module name="zaba" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="Primary" target="11" />
+    </bytecodeTargetLevel>
   </component>
 </project>

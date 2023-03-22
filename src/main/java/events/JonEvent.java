@@ -1,9 +1,6 @@
 package events;
 
-import com.mongodb.ConnectionString;
-import com.mongodb.MongoClientSettings;
-import com.mongodb.ServerApi;
-import com.mongodb.ServerApiVersion;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.json.simple.JSONArray;
@@ -11,10 +8,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 
 public class JonEvent extends ListenerAdapter {
     // JonEvents are various actions with the intent of annoying someone. Nothing about this class is
@@ -44,7 +37,7 @@ public class JonEvent extends ListenerAdapter {
                 event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
 
                 if(event.getAuthor().getId().equals("222163619125788682")) {
-                    event.getMessage().addReaction("15_neg:934919187787288597").queue();
+                    event.getMessage().addReaction(Emoji.fromUnicode("15_neg:934919187787288597")).queue();
                 }
                 System.out.println("dragonball stuff" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                 return;
@@ -55,14 +48,14 @@ public class JonEvent extends ListenerAdapter {
         triggers = (JSONArray) jsonObject.get("sus");
         for (Object key : triggers) {
             if (msg.contains(key.toString())) {
-                event.getMessage().addReaction("amongass:854818205624827935").queue();
+                event.getMessage().addReaction(Emoji.fromUnicode("amongass:854818205624827935")).queue();
                 System.out.println("sus stuff" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
                 return;
             }
         }
 
         if (msg.contains("grill")) {
-            event.getMessage().addReaction("justagriller:816352491386044426").queue();
+            event.getMessage().addReaction(Emoji.fromUnicode("justagriller:816352491386044426")).queue();
             System.out.println("grill" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
         if (msg.equals("based")){
@@ -73,15 +66,15 @@ public class JonEvent extends ListenerAdapter {
         }
 
         if (msg.equals("n")) {
-            event.getMessage().addReaction("disintegrate:829491387824865321").queue();
-            event.getMessage().addReaction("touch_grass:936036425789493269").queue();
-            event.getMessage().addReaction("soyjak:921475501023977573").queue();
-            event.getMessage().addReaction("bravo:250845632141590528").queue();
-            event.getMessage().addReaction("3dHyperThink:676990578793381937").queue();
-            event.getMessage().addReaction("grabs_you:666497981742186506").queue();
-            event.getMessage().addReaction("shiba_not_amused:866064465359011880").queue();
+            event.getMessage().addReaction(Emoji.fromUnicode("disintegrate:829491387824865321")).queue();
+            event.getMessage().addReaction(Emoji.fromUnicode("touch_grass:936036425789493269")).queue();
+            event.getMessage().addReaction(Emoji.fromUnicode("soyjak:921475501023977573")).queue();
+            event.getMessage().addReaction(Emoji.fromUnicode("bravo:250845632141590528")).queue();
+            event.getMessage().addReaction(Emoji.fromUnicode("3dHyperThink:676990578793381937")).queue();
+            event.getMessage().addReaction(Emoji.fromUnicode("grabs_you:666497981742186506")).queue();
+            event.getMessage().addReaction(Emoji.fromUnicode("shiba_not_amused:866064465359011880")).queue();
             if(!event.getAuthor().getId().equals("222163619125788682")) {
-                event.getMessage().addReaction("15_neg:934919187787288597").queue();
+                event.getMessage().addReaction(Emoji.fromUnicode("15_neg:934919187787288597")).queue();
             }
             System.out.println("n" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
             return;
@@ -121,6 +114,8 @@ public class JonEvent extends ListenerAdapter {
 
                 System.out.println("************************************************************");
         }
+
+
 
         // Delete me
         //event.getChannel().sendMessage("https://cdn.discordapp.com/attachments/858416918586851368/874480650332307516/SHUTTHEFUCKUP-1.mp4").queue();
