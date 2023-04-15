@@ -58,12 +58,6 @@ public class JonEvent extends ListenerAdapter {
             event.getMessage().addReaction(Emoji.fromUnicode("justagriller:816352491386044426")).queue();
             System.out.println("grill" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
-        if (msg.equals("based")){
-            if(Math.random() > 0.85){
-                event.getChannel().sendMessage("not based").queue();
-                System.out.println("not based" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-                }
-        }
 
         if (msg.equals("n")) {
             event.getMessage().addReaction(Emoji.fromUnicode("disintegrate:829491387824865321")).queue();
@@ -78,11 +72,6 @@ public class JonEvent extends ListenerAdapter {
             }
             System.out.println("n" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
             return;
-        }
-
-        if (msg.contains("@everyone")) {
-            event.getChannel().sendMessage("https://media.discordapp.net/attachments/944254315630035005/951189791691669534/unknown.png").queue();
-            System.out.println("@everyone" + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
         }
 
         if (msg.contains("rrrr mom")){

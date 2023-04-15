@@ -226,9 +226,9 @@ public class PeriodicEvent extends ListenerAdapter {
         String rng = String.valueOf(rand);
         String meme= friday.get(rng).toString();
 
-        if(Math.random() < .92) {
+        if(Math.random() > .85) {
             MessageCreateData data = new MessageCreateBuilder()
-                    .setContent("Behold, everyone! \\nIt's **Friday**")
+                    .setContent("Behold, everyone! It's **Friday**")
                     .setFiles(FileUpload.fromData(new File("videos/friday/"  + meme)))
                     .build();
             Objects.requireNonNull(jda.getTextChannelById("944254315630035005")).sendMessage(data).queue();
@@ -400,6 +400,8 @@ public class PeriodicEvent extends ListenerAdapter {
             if(dates.get(today).toString().equals("Corey")){
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("<:sus:802264386026340403> Today is " + mention + "'s birthday! <:justatheory:971167345437462589>").queue();
                 Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("https://cdn.discordapp.com/attachments/261297258803363850/997717479537246278/unknown.png").queue();
+
+                Objects.requireNonNull(jda.getTextChannelById(chatID)).sendMessage("Today is also " + "<@267697069643399168>" + "'s birthday!").queue();
             }
 
             else{

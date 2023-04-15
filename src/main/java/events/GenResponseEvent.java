@@ -82,6 +82,10 @@ public class GenResponseEvent extends ListenerAdapter {
             return;
         }
 
+        List<String> unapprovedChannels = new ArrayList<>();
+        unapprovedChannels.add("946443239630733322");
+        unapprovedChannels.add("954377064247599154");
+
         if(!event.getMessage().getAuthor().isBot()) {
             JSONParser parser = new JSONParser();
             JSONObject gen = null;
@@ -91,6 +95,8 @@ public class GenResponseEvent extends ListenerAdapter {
             JSONObject mto = null;
             JSONObject genEm = null;
             JSONObject emoteList = null;
+            JSONObject responseList = null;
+            JSONObject genProb = null;
             
             try {
                 Object obj = parser.parse(new FileReader("keywords.json"));
@@ -100,13 +106,30 @@ public class GenResponseEvent extends ListenerAdapter {
                 genCom = (JSONObject) jsonObject.get("generalComplex");
                 mto = (JSONObject) jsonObject.get("manyToOne");
                 genEm = (JSONObject) jsonObject.get("generalEmote");
+                genProb = (JSONObject) jsonObject.get("generalProb");
                 emoteList = (JSONObject) jsonObject.get("emotes");
+                responseList = (JSONObject) jsonObject.get("responseList");
 
 
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
+
+            // GenEm or General Emote will react with an emote whenever a trigger word / phrase is detected in a message
+            assert genEm != null;
+            assert emoteList != null;
+            Set<String> scanGenEm = genEm.keySet();
+            for (String str : scanGenEm) {
+                if(msg.contains(str)){
+                    String emote = emoteList.get(genEm.get(str)).toString();
+                    event.getMessage().addReaction(Emoji.fromUnicode(emote)).queue();
+                }
+            }
+
+            if(unapprovedChannels.contains(event.getChannel().getId()))
+                return;
+            // Gen or General will respond whenever a trigger word / phrase is detected in a message
             assert gen != null;
             Set<String> scanGen = gen.keySet();
             for (String str : scanGen) {
@@ -116,16 +139,18 @@ public class GenResponseEvent extends ListenerAdapter {
                 }
             }
 
+            // GenEx or General Exact will respond only when the message in question matches exactly with the trigger list
             assert genEx != null;
             Set<String> scanGenEx = genEx.keySet();
+            String msgClean= msg.replaceAll("[^a-zA-Z0-9 ]", "");
             for (String str : scanGenEx) {
-                if(msg.equals(str)){
+                if(msgClean.equals(str)){
                     System.out.println( " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-                    event.getChannel().sendMessage(genEx.get(msg).toString()).queue();
+                    event.getChannel().sendMessage(genEx.get(msgClean).toString()).queue();
                 }
             }
 
-
+            // GenCom or General Complex will trigger from a list of words and pull a random response from another list
             assert genCom != null;
             for (int i = 1; i <= genCom.size(); i++){
                 JSONObject genScan = (JSONObject) genCom.get(String.valueOf(i));
@@ -155,26 +180,27 @@ public class GenResponseEvent extends ListenerAdapter {
                 }
             }
 
-            assert genEm != null;
-            assert emoteList != null;
-            Set<String> scanGenEm = genEm.keySet();
-            for (String str : scanGenEm) {
+            // GenProb or General Probability when triggered will pull from a list of responses accompanied by a chance of the response being given
+            assert genProb != null;
+            Set<String> scanProb = genProb.keySet();
+            for (String str : scanProb) {
                 if(msg.contains(str)){
-                    String emote = emoteList.get(genEm.get(str)).toString();
-                    event.getMessage().addReaction(Emoji.fromUnicode(emote)).queue();
+                    String resp = genProb.get(str).toString();
+                    String[] split = resp.split("\\;");
+                    if(Math.random() < Float.parseFloat(split[1])/100)
+                        event.getChannel().sendMessage(split[0]).queue();
                 }
             }
 
+
+            // mto or Many To One is...
             assert mto != null;
-            for (int i = 1; i <= mto.size(); i++) {
-                JSONObject keyScan = (JSONObject) mto.get(String.valueOf(i));
-                String str = keyScan.keySet().toString();
-                String key = str.substring(1, str.length() - 1);
-                if (msg.contains(key)) {
-                    String keyValue = keyScan.get(key).toString();
-                    String resKey = (String) jsonObject.get(keyValue);
-                    System.out.println(key + " #" + event.getChannel().getName() + " @" + event.getMessage().getAuthor().getName());
-                    event.getChannel().sendMessage(resKey).queue();
+            assert responseList != null;
+            Set<String> scanMto = mto.keySet();
+            for (String str : scanMto) {
+                if(msg.contains(str)){
+                    String resp = responseList.get(mto.get(str)).toString();
+                    event.getChannel().sendMessage(resp).queue();
                 }
             }
         }
