@@ -399,6 +399,15 @@ public class SocialCreditEvent extends ListenerAdapter {
             if (readId.equals("sus:802264386026340403")) {
                 msg.addReaction(Emoji.fromUnicode("sus:802264386026340403")).queue();
             }
+            if (readId.equals("boatyvv:854824090896171029")) {
+                msg.addReaction(Emoji.fromUnicode("boatyvv:854824090896171029")).queue();
+            }
+            if (readId.equals("boatyvv:854825460494761994")) {
+                msg.addReaction(Emoji.fromUnicode("boatyvv:854825460494761994")).queue();
+            }
+            if (readId.equals("boatyvv:854823799583932477")) {
+                msg.addReaction(Emoji.fromUnicode("boatyvv:854823799583932477")).queue();
+            }
         }
 
     }
