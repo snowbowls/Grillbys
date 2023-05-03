@@ -1,5 +1,6 @@
 package events;
 
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -8,6 +9,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import java.io.FileReader;
+import java.util.concurrent.TimeUnit;
 
 public class JonEvent extends ListenerAdapter {
     // JonEvents are various actions with the intent of annoying someone. Nothing about this class is
@@ -104,6 +106,19 @@ public class JonEvent extends ListenerAdapter {
                 System.out.println("************************************************************");
         }
 
+        if(msg.contains("!zaba")){
+            String message = msg.substring(5);
+            if(message.length() > 19){
+                String content = message.substring(0,message.length()-19).trim();
+                String replyID = message.substring(message.length()-19);
+                Message replyMsg = event.getChannel().retrieveMessageById(replyID).complete();
+                replyMsg.reply(content).queue();
+            }
+            else {
+                event.getChannel().sendMessage(message).queue();
+            }
+            event.getChannel().deleteMessageById(event.getMessageId()).queueAfter(700, TimeUnit.MILLISECONDS);
+        }
 
 
         // Delete me

@@ -32,7 +32,7 @@ public class Bot{
                 .addEventListeners(new PollEvent())
                 .addEventListeners(new JonEvent())
                 .addEventListeners(new PeriodicEvent())
-
+                .addEventListeners(new UserStatEvent())
 
                 .build();
     }

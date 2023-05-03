@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -24,9 +25,18 @@ public class PollEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         if(event.getAuthor().isBot())
             return;
+        String msg = null;
 
-        String[] args = event.getMessage().getContentRaw().split(",");
+        try{msg = event.getMessage().getContentRaw();}
+        catch(ErrorResponseException r){
+            System.out.println(r);
+        }
+        String[] args = msg.split(",");
+
         String cmd = null;
+
+        if(msg.length() < 5)
+            return;
 
         try{cmd = args[0].substring(0,5);}
         catch (StringIndexOutOfBoundsException r){
@@ -45,9 +55,11 @@ public class PollEvent extends ListenerAdapter {
 
         // Check if the message starts with the poll command, in this case "!poll"
         if (cmd.equalsIgnoreCase("!poll")) {
+            System.out.println("Poll created by " + event.getAuthor().getName());
+
             // Check if the user provided a poll question
             if (args.length < 2) {
-                event.getChannel().sendMessage("Please provide a poll question.").queue();
+                event.getChannel().sendMessage("Invalid format, check '!help poll'").queue();
                 return;
             }
             event.getChannel().deleteMessageById(event.getMessageId()).complete();
@@ -81,10 +93,15 @@ public class PollEvent extends ListenerAdapter {
     }
     public void onMessageReactionAdd(MessageReactionAddEvent event) {
         // Get the message that the reaction was added to
-        Message message = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
+        Message msg = null;
+        try{msg = event.getChannel().retrieveMessageById(event.getMessageId()).complete();}
+        catch(ErrorResponseException r){
+            System.out.println(r);
+        }
+        Message message = msg;//event.getChannel().retrieveMessageById(event.getMessageId()).complete();
 
         // Check if the message is a poll and the reaction is valid
-        if (!message.getEmbeds().isEmpty() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())) {
+        if (!message.getEmbeds().isEmpty() && message.getAuthor().isBot() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())) {
 
             // Get the poll question and options from the message
             MessageEmbed originalEmbed = message.getEmbeds().get(0);
@@ -119,7 +136,7 @@ public class PollEvent extends ListenerAdapter {
 
         Message message = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
 
-        if (!message.getEmbeds().isEmpty() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())) {
+        if (!message.getEmbeds().isEmpty() && message.getAuthor().isBot() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())) {
 
             // Get the poll question and options from the message
             MessageEmbed originalEmbed = message.getEmbeds().get(0);

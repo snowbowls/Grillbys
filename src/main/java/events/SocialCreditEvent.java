@@ -17,6 +17,7 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
 import net.dv8tion.jda.api.utils.messages.MessageCreateData;
@@ -41,9 +42,16 @@ public class SocialCreditEvent extends ListenerAdapter {
     // On Message Received
     // Used for social credit related commands
     public void onMessageReceived(MessageReceivedEvent event){
+
+        String msgtemp = null;
+        try{msgtemp = event.getMessage().getContentRaw();}
+        catch(ErrorResponseException r){
+            System.out.println(r);
+        }
+
         // Get author name, parse message for processing
         String userid = event.getMessage().getAuthor().getId();
-        String[] msg = event.getMessage().getContentRaw().split(" ");
+        String[] msg = msgtemp.split(" ");
 
         // Database connection
         ConnectionString connectionString = new ConnectionString(uri);
