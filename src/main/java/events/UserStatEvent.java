@@ -30,7 +30,7 @@ public class UserStatEvent extends ListenerAdapter {
         // Get author name, parse message for processing
         String userid = event.getMessage().getAuthor().getId();
         String username = event.getAuthor().getName();
-        String fullmsg = event.getMessage().getContentRaw();
+        String fullmsg = event.getMessage().getContentRaw().toLowerCase();
         String[] msg = fullmsg.split(" ");
 
         // Database connection
@@ -84,7 +84,13 @@ public class UserStatEvent extends ListenerAdapter {
                         String word = entry.getKey();
                         Integer value = entry.getValue();
                         if (naughties.containsKey(word)) {
-                            naughties.put(word, naughties.getInteger(word) + value);
+                            Integer total = naughties.getInteger(word) + value;
+                            naughties.put(word, total);
+                            System.out.println(total);
+                            if(total == 100)
+                                event.getChannel().sendMessage("Congrats on your 100th use of the word: **" + word + "**!").complete();
+                            if(total == 50)
+                                event.getChannel().sendMessage("Congrats on your 50th use of the word: **" + word + "**!").complete();
                         } else {
                             naughties.put(word, value);
                         }
@@ -93,6 +99,8 @@ public class UserStatEvent extends ListenerAdapter {
                     collection.updateOne(query, update);
 
                     System.out.println("NAUGHTY: " +  wordCnt + " Spoken by: " + username);
+
+
 
                 } else {
 
@@ -129,6 +137,7 @@ public class UserStatEvent extends ListenerAdapter {
 
                     EmbedBuilder builder = new EmbedBuilder()
                             .setTitle("Swear Jar for " + username)
+                            .setThumbnail("https://raw.githubusercontent.com/snowbowls/Zaba/master/images/eyepop.png")
                             .setColor(Color.MAGENTA);
 
                     StringBuilder cusses = new StringBuilder();
@@ -157,7 +166,7 @@ public class UserStatEvent extends ListenerAdapter {
                 // Create a new embed builder
                 EmbedBuilder builder = new EmbedBuilder()
                         .setTitle("Swear Jar for " + event.getGuild().getName())
-                        .setThumbnail("")
+                        .setThumbnail("https://raw.githubusercontent.com/snowbowls/Zaba/master/images/eyepop.png")
                         .setColor(Color.MAGENTA);
 
                 // Iterate over all documents in the collection
