@@ -1,27 +1,26 @@
 package events;
 
-import com.mongodb.*;
+import com.mongodb.ConnectionString;
+import com.mongodb.MongoClientSettings;
+import com.mongodb.ServerApi;
+import com.mongodb.ServerApiVersion;
 import com.mongodb.client.*;
-import com.mongodb.client.model.Projections;
-import com.mongodb.client.model.Sorts;
 import io.github.cdimascio.dotenv.Dotenv;
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.dv8tion.jda.api.utils.messages.MessageCreateBuilder;
-import net.dv8tion.jda.api.utils.messages.MessageCreateData;
 import org.bson.Document;
-import org.bson.conversions.Bson;
 
 import java.awt.*;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.mongodb.client.model.Filters.eq;
 
 public class UserStatEvent extends ListenerAdapter {
     public static Dotenv dotenv = Dotenv.load();
@@ -30,9 +29,9 @@ public class UserStatEvent extends ListenerAdapter {
     public void onMessageReceived(MessageReceivedEvent event) {
         // Get author name, parse message for processing
         String userid = event.getMessage().getAuthor().getId();
+        String username = event.getAuthor().getName();
         String fullmsg = event.getMessage().getContentRaw();
         String[] msg = fullmsg.split(" ");
-
 
         // Database connection
         ConnectionString connectionString = new ConnectionString(uri);
@@ -51,78 +50,166 @@ public class UserStatEvent extends ListenerAdapter {
         }
         String[] words = reader.lines().toArray(String[]::new);
 
-        boolean containsWord = false;
+        Map<String, Integer> wordCnt = new HashMap<>();
 
         // Check if the input string contains any of the words from the array
-        for (String word : words) {
-            String regex = "\\b" + word + "\\b";
+        for (String cuss : words) {
+            String regex = "\\b" + cuss + "\\b";
             Pattern pattern = Pattern.compile(regex);
             Matcher matcher = pattern.matcher(fullmsg);
-            if (matcher.find()) {
-                containsWord = true;
-                break;
+            int count = 0;
+            while (matcher.find()) {
+                count++;
+            }
+            if (count > 0) {
+                wordCnt.put(cuss, count);
             }
         }
-        if (containsWord) {
-            System.out.println("The input string contains a word from the text file");
-        } else {
-            System.out.println("The input string does not contain any words from the text file");
-        }
 
-        if(fullmsg.equalsIgnoreCase("tryme")) {
-            event.getGuild().loadMembers();
-            List<Member> users = event.getGuild().getMembers();
-            List<String> usersId = new ArrayList<>();
-
-            List<String> currUsers = new ArrayList<>();
-            List<String> currCredit = new ArrayList<>();
-
-            StringBuilder sbUser = new StringBuilder();
-            StringBuilder sbCredit = new StringBuilder();
-            EmbedBuilder eb = new EmbedBuilder();
-            eb.setThumbnail("https://raw.githubusercontent.com/snowbowls/Zaba/master/images/icon.PNG");
-            eb.setTitle("社会信用体系", null);
-            eb.setColor(new Color(114, 41, 54));
-
-            for (Member u : users) {
-                usersId.add(u.getId());
-            }
-
+        // Checks if HashMap isn't empty
+        if (!wordCnt.isEmpty()) {
             try (MongoClient mongoClient = MongoClients.create(settings)) {
                 MongoDatabase database = mongoClient.getDatabase("ChillGrill");
                 MongoCollection<Document> collection = database.getCollection("UserStats");
-                try {
 
-                    Bson projectionFields = Projections.fields(
-                            Projections.include("username", "userid", "score"),
-                            Projections.excludeId());
-                    try (MongoCursor<Document> cursor = collection.find()
-                            .projection(projectionFields)
-                            .sort(Sorts.descending("score")).iterator()) {
-                        while (cursor.hasNext()) {
-                            Document doc = cursor.next();
-                            if (usersId.contains(doc.getString("userid"))) {
+                // Finds document with userid of author
+                Document query = new Document("userid", userid);
+                Document update = new Document();
 
-                                currUsers.add(doc.getString("username") + "\n");
-                                currCredit.add(".\u3000\u3000\u3000" + doc.getInteger("score").toString() + "\n");
-                            }
+                Document document = collection.find(query).first();
+
+                if (document != null) {
+                    Document naughties = (Document) document.get("naughties");
+                    for (Map.Entry<String, Integer> entry : wordCnt.entrySet()) {
+                        String word = entry.getKey();
+                        Integer value = entry.getValue();
+                        if (naughties.containsKey(word)) {
+                            naughties.put(word, naughties.getInteger(word) + value);
+                        } else {
+                            naughties.put(word, value);
                         }
-                        for (String s : currUsers)
-                            sbUser.append(s);
-                        for (String s : currCredit)
-                            sbCredit.append(s);
-
-                        eb.addField("Username  统一社会信用代码 ", sbUser.toString(), true);
-                        eb.addField("Social Credit 社会信用评分", sbCredit.toString(), true);
-                        MessageCreateData data = new MessageCreateBuilder()
-                                .addEmbeds(eb.build())
-                                .build();
-                        event.getChannel().sendMessage(data).queue();
                     }
-                } catch (MongoException me) {
-                    System.err.println("ERROR");
-                }
+                    update.append("$set", new Document("naughties", naughties));
+                    collection.updateOne(query, update);
 
+                    System.out.println("NAUGHTY: " +  wordCnt + " Spoken by: " + username);
+
+                } else {
+
+                    // No document was found, creating one
+                    System.out.println("NAUGHTY: " +  wordCnt + " Spoken by: " + username);
+                    System.out.println("No document found for user ID: " + userid);
+
+                    Document userDoc = new Document("userid", userid);
+                    userDoc.append("username", "snowbowls");
+                    Document newNaughties = new Document();
+                    for (Map.Entry<String, Integer> entry : wordCnt.entrySet()) {
+                        String word = entry.getKey();
+                        Integer value = entry.getValue();
+                        newNaughties.append(word, value);
+                    }
+                    userDoc.append("naughties", newNaughties);
+                    collection.insertOne(userDoc);
+
+                    System.out.println("Created new document for: " + username);
+                }
+            }
+
+        }
+
+        if(fullmsg.equalsIgnoreCase("!swearjar")) {
+            try (MongoClient mongoClient = MongoClients.create(settings)) {
+                MongoDatabase database = mongoClient.getDatabase("ChillGrill");
+                MongoCollection<Document> collection = database.getCollection("UserStats");
+
+                Document doc = collection.find(eq("userid", userid)).first();
+
+                if (doc != null && doc.containsKey("naughties")) {
+                    Document naughties = doc.get("naughties", Document.class);
+
+                    EmbedBuilder builder = new EmbedBuilder()
+                            .setTitle("Swear Jar for " + username)
+                            .setColor(Color.MAGENTA);
+
+                    StringBuilder cusses = new StringBuilder();
+                    StringBuilder cusscnt = new StringBuilder();
+
+                    for (String key : naughties.keySet()) {
+                        int count = naughties.getInteger(key);
+                        cusses.append(key + "\n");
+                        cusscnt.append(String.valueOf(count) + "\n");
+                    }
+                    builder.addField("Cuss", cusses.toString(), true);
+                    builder.addField("Count", cusscnt.toString(), true);
+                    event.getChannel().sendMessageEmbeds(builder.build()).queue();
+                } else {
+                    event.getChannel().sendMessage("You haven't said any naughties yet!").queue();
+                }
+            }
+        }
+        if(fullmsg.equalsIgnoreCase("!swearjar all")) {
+            try (MongoClient mongoClient = MongoClients.create(settings)) {
+                MongoDatabase database = mongoClient.getDatabase("ChillGrill");
+
+                // Get the "UserStats" collection
+                MongoCollection<Document> collection = database.getCollection("UserStats");
+
+                // Create a new embed builder
+                EmbedBuilder builder = new EmbedBuilder()
+                        .setTitle("Swear Jar for " + event.getGuild().getName())
+                        .setThumbnail("")
+                        .setColor(Color.MAGENTA);
+
+                // Iterate over all documents in the collection
+                MongoCursor<Document> cursor = collection.find().iterator();
+                while (cursor.hasNext()) {
+                    Document document = cursor.next();
+
+                    // Get the username and naughties values from the document
+                    String name = document.getString("username");
+                    Document naughties = document.get("naughties", Document.class);
+
+                    StringBuilder cusses = new StringBuilder();
+
+                    // Get the highest naughties value
+                    int highestNaughties = 0;
+                    String cuss1 = null;
+                    int secNaughties = 0;
+                    String cuss2 = null;
+                    int thirdNaughties = 0;
+                    String cuss3 = null;
+                    for (String key : naughties.keySet()) {
+                        int value = naughties.getInteger(key);
+                        if (value > highestNaughties) {
+                            thirdNaughties = secNaughties;
+                            secNaughties = highestNaughties;
+                            highestNaughties = value;
+                            cuss3 = cuss2;
+                            cuss2 = cuss1;
+                            cuss1 = key;
+                        }
+                        else if (value > secNaughties){
+                            thirdNaughties = secNaughties;
+                            secNaughties = value;
+                            cuss3 = cuss2;
+                            cuss2 = key;
+                        }
+                        else if (value > thirdNaughties){
+                            thirdNaughties = value;
+                            cuss3 = key;
+                        }
+                    }
+
+                    cusses.append(cuss1 + " - " + highestNaughties + "\n");
+                    if(secNaughties > 0)
+                        cusses.append(cuss2 + " - " + secNaughties + "\n");
+                    if(thirdNaughties > 0)
+                        cusses.append(cuss3 + " - " + thirdNaughties + "\n");
+
+                    // Add the username and highest naughties value to the embed builder
+                    builder.addField(name, cusses.toString(), true);
+                }
+                    event.getChannel().sendMessageEmbeds(builder.build()).queue();
             }
         }
     }

@@ -108,11 +108,19 @@ public class JonEvent extends ListenerAdapter {
 
         if(msg.contains("!zaba")){
             String message = msg.substring(5);
-            if(message.length() > 19){
-                String content = message.substring(0,message.length()-19).trim();
-                String replyID = message.substring(message.length()-19);
-                Message replyMsg = event.getChannel().retrieveMessageById(replyID).complete();
-                replyMsg.reply(content).queue();
+            char lastChar = message.charAt(message.length() - 1);
+            if(message.length() > 19 && Character.isDigit(lastChar)){
+                lastChar = message.charAt(message.length() - 18);
+                if(Character.isDigit(lastChar)) {
+                    String content = message.substring(0, message.length() - 19).trim();
+                    String replyID = message.substring(message.length() - 19);
+                    try {
+                        Message replyMsg = event.getChannel().retrieveMessageById(replyID).complete();
+                        replyMsg.reply(content).queue();
+                    }catch (IllegalArgumentException r){
+                        event.getChannel().sendMessage(message).queue();
+                    }
+                }
             }
             else {
                 event.getChannel().sendMessage(message).queue();
