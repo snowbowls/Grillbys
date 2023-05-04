@@ -86,7 +86,6 @@ public class UserStatEvent extends ListenerAdapter {
                         if (naughties.containsKey(word)) {
                             Integer total = naughties.getInteger(word) + value;
                             naughties.put(word, total);
-                            System.out.println(total);
                             if(total == 100)
                                 event.getChannel().sendMessage("Congrats on your 100th use of the word: **" + word + "**!").complete();
                             if(total == 50)
