@@ -3,7 +3,7 @@ package events;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageEmbed;
-import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.ThreadChannel;
 import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
@@ -62,7 +62,7 @@ public class PollEvent extends ListenerAdapter {
                 event.getChannel().sendMessage("Invalid format, check '!help poll'").queue();
                 return;
             }
-            event.getChannel().deleteMessageById(event.getMessageId()).complete();
+
             // Create a new EmbedBuilder and set the title and color
             EmbedBuilder builder = new EmbedBuilder();
             builder.setTitle("Poll: " + args[0]);
@@ -79,16 +79,33 @@ public class PollEvent extends ListenerAdapter {
                     .addEmbeds(builder.build())
                     .build();
 
-
-            TextChannel channel = (TextChannel) event.getChannel();
             String[] finalArgs = args;
-            channel.sendMessage(data)
-                    .submit()
-                    .thenAccept(message -> {
-                        for (int i = 1; i < finalArgs.length; i++) {
-                            message.addReaction(Emoji.fromUnicode(Arrays.asList(reactions).get(i-1))).queue();
-                        }
-                    });
+
+            try{
+                event.getChannel().sendMessage(data)
+                        .submit()
+                        .thenAccept(message -> {
+                            for (int i = 1; i < finalArgs.length; i++) {
+                                message.addReaction(Emoji.fromUnicode(Arrays.asList(reactions).get(i-1))).queue();
+                            }
+                        });
+            } catch (ClassCastException r) {
+                // I think this catch should be deleted
+                System.out.println("In thread, preforming catch");
+                String threadId = String.valueOf(event.getChannelType().getId());
+                System.out.println(threadId);
+                ThreadChannel thread = event.getGuild().getThreadChannelById("1017548168038187008");
+                thread.sendMessage(data)
+                        .submit()
+                        .thenAccept(message -> {
+                            for (int i = 1; i < finalArgs.length; i++) {
+                                message.addReaction(Emoji.fromUnicode(Arrays.asList(reactions).get(i - 1))).queue();
+                            }
+                        });
+
+            }
+            event.getChannel().deleteMessageById(event.getMessageId()).queue();
+
         }
     }
     public void onMessageReactionAdd(MessageReactionAddEvent event) {

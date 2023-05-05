@@ -108,7 +108,7 @@ public class UserStatEvent extends ListenerAdapter {
                     System.out.println("No document found for user ID: " + userid);
 
                     Document userDoc = new Document("userid", userid);
-                    userDoc.append("username", "snowbowls");
+                    userDoc.append("username", username);
                     Document newNaughties = new Document();
                     for (Map.Entry<String, Integer> entry : wordCnt.entrySet()) {
                         String word = entry.getKey();

@@ -110,6 +110,7 @@ public class PlayerControl extends ListenerAdapter
         {
             if(connectedChannel == null) {
                 event.getChannel().sendMessage("You are not connected to a voice channel!").queue();
+                return;
             }
             else
             {
@@ -143,7 +144,11 @@ public class PlayerControl extends ListenerAdapter
         else if ("!play".equals(command[0]))
         {
             if(hasStarted){
-                timerTask.cancel();
+                try {
+                    timerTask.cancel();
+                } catch (NullPointerException r){
+                    System.out.println(r);
+                }
                 hasStarted = false;
             }
             if(connectedChannel == null) event.getChannel().sendMessage("You are not connected to a voice channel!").queue();
