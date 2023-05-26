@@ -43,6 +43,10 @@ public class GenResponseEvent extends ListenerAdapter {
                 use.add("Explains how the poll function works\n");
                 command.add("!help socialcredit\n");
                 use.add("Explains how social credit works\n");
+                command.add("!help swearjar\n");
+                use.add("Explains how the swear jar works\n");
+                command.add("!help contra\n");
+                use.add("Explains how the contribution tracker works\n");
 
                 for(String s : command)
                     commands.append(s);
@@ -148,6 +152,81 @@ public class GenResponseEvent extends ListenerAdapter {
                         + "\n*劉曉波*\t   ● If the react is removed, the author's social credit will update accordingly"
                         + "\n*李洪志*\t   ● Use '!show all' or '!show mine' to view social credit scores").queue();
                 return;
+            }
+            if(help[1].equalsIgnoreCase("contra")){
+                List<String> command = new ArrayList<>();
+                List<String> call = new ArrayList<>();
+                List<String> calldesc = new ArrayList<>();
+
+
+                StringBuilder commands = new StringBuilder();
+                StringBuilder calls = new StringBuilder();
+                StringBuilder calldescs = new StringBuilder();
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setThumbnail("https://images-ext-1.discordapp.net/external/HwnSW1Qv1B0_ZkomUohZ7P-TYmFsX775K0H4CdQRbAw/https/e0.pxfuel.com/wallpapers/940/704/desktop-wallpaper-glass-animals-zaba-artwork-by-micah-lidberg-glass-animals-pool-thumbnail.jpg");
+                eb.setTitle("Contribution Tracker", null);
+                eb.setColor(new Color(114, 41, 54));
+
+                command.add("This function allows users to claim an item on a list\n\n");
+                command.add(" ...\n");
+                call.add("!contra\n");
+                calldesc.add("REEEE\n");
+                call.add("!contra add XYZ\n");
+                calldesc.add("REEEE\n");
+                call.add("!contra del XYZ\n");
+                calldesc.add("REEEE\n");
+                call.add("!contra clear\n");
+                calldesc.add("REEEE\n");
+
+                for(String s : command)
+                    commands.append(s);
+                for(String s: call)
+                    calls.append(s);
+                for(String s: calldesc)
+                    calldescs.append(s);
+
+                eb.addField("Function Explanation", commands.toString(), false);
+                eb.addField("Commands", calls.toString(), true);
+                eb.addField("Description", calldescs.toString(), true);
+                MessageCreateData data = new MessageCreateBuilder()
+                        .addEmbeds(eb.build())
+                        .build();
+                event.getChannel().sendMessage(data).queue();
+            }
+            if(help[1].equalsIgnoreCase("swearjar")){
+                List<String> command = new ArrayList<>();
+                List<String> call = new ArrayList<>();
+                List<String> calldesc = new ArrayList<>();
+
+
+                StringBuilder commands = new StringBuilder();
+                StringBuilder calls = new StringBuilder();
+                StringBuilder calldescs = new StringBuilder();
+                EmbedBuilder eb = new EmbedBuilder();
+                eb.setThumbnail("https://images-ext-1.discordapp.net/external/HwnSW1Qv1B0_ZkomUohZ7P-TYmFsX775K0H4CdQRbAw/https/e0.pxfuel.com/wallpapers/940/704/desktop-wallpaper-glass-animals-zaba-artwork-by-micah-lidberg-glass-animals-pool-thumbnail.jpg");
+                eb.setTitle("Contribution Tracker", null);
+                eb.setColor(new Color(114, 41, 54));
+
+                command.add("Zaba tracks everyone's use of specific words. The master word list is unknown to everyone but Zaba. \n\n");
+                call.add("!swearjar\n");
+                calldesc.add("Shows all words used by the author\n");
+                call.add("!swearjar all\n");
+                calldesc.add("Shows top 3 most used words of all users in the server");
+
+                for(String s : command)
+                    commands.append(s);
+                for(String s: call)
+                    calls.append(s);
+                for(String s: calldesc)
+                    calldescs.append(s);
+
+                eb.addField("Function Explanation", commands.toString(), false);
+                eb.addField("Commands", calls.toString(), true);
+                eb.addField("Description", calldescs.toString(), true);
+                MessageCreateData data = new MessageCreateBuilder()
+                        .addEmbeds(eb.build())
+                        .build();
+                event.getChannel().sendMessage(data).queue();
             }
         }
 

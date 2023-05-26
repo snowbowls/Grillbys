@@ -33,6 +33,8 @@ public class Bot{
                 .addEventListeners(new JonEvent())
                 .addEventListeners(new PeriodicEvent())
                 .addEventListeners(new UserStatEvent())
+                .addEventListeners(new ContribroEvent())
+                .addEventListeners(new ButtonTest())
 
                 .build();
     }

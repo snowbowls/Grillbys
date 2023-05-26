@@ -118,7 +118,8 @@ public class PollEvent extends ListenerAdapter {
         Message message = msg;//event.getChannel().retrieveMessageById(event.getMessageId()).complete();
 
         // Check if the message is a poll and the reaction is valid
-        if (!message.getEmbeds().isEmpty() && message.getAuthor().isBot() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())) {
+        if (!message.getEmbeds().isEmpty() && message.getAuthor().isBot() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())
+                && message.getEmbeds().get(0).getTitle().substring(0,4).equalsIgnoreCase("poll")) {
 
             // Get the poll question and options from the message
             MessageEmbed originalEmbed = message.getEmbeds().get(0);
@@ -153,7 +154,8 @@ public class PollEvent extends ListenerAdapter {
 
         Message message = event.getChannel().retrieveMessageById(event.getMessageId()).complete();
 
-        if (!message.getEmbeds().isEmpty() && message.getAuthor().isBot() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())) {
+        if (!message.getEmbeds().isEmpty() && message.getAuthor().isBot() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())
+                && message.getEmbeds().get(0).getTitle().substring(0,4).equalsIgnoreCase("poll")) {
 
             // Get the poll question and options from the message
             MessageEmbed originalEmbed = message.getEmbeds().get(0);
