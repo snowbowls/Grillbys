@@ -27,6 +27,10 @@ public class UserStatEvent extends ListenerAdapter {
     String uri = dotenv.get("URI");
 
     public void onMessageReceived(MessageReceivedEvent event) {
+
+        if(event.getAuthor().isBot())
+            return;
+
         // Get author name, parse message for processing
         String userid = event.getMessage().getAuthor().getId();
         String username = event.getAuthor().getName();

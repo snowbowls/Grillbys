@@ -1,35 +1,26 @@
 package events;
 
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
-import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
-import com.sedmelluq.discord.lavaplayer.source.bandcamp.BandcampAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.http.HttpAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.local.LocalAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.twitch.TwitchStreamAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.vimeo.VimeoAudioSourceManager;
-import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
-import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.channel.Channel;
-import net.dv8tion.jda.api.entities.channel.ChannelType;
-import net.dv8tion.jda.api.entities.channel.middleman.AudioChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
+import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
+import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.api.exceptions.PermissionException;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
+import net.dv8tion.jda.api.managers.AudioManager;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.*;
-import java.util.logging.Level;
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class PlayerControl extends ListenerAdapter
-{
+{ /*
     public static final int DEFAULT_VOLUME = 35; //(0 - 150, where 100 is default max volume)
 
     private final AudioPlayerManager playerManager;
@@ -120,7 +111,7 @@ public class PlayerControl extends ListenerAdapter
                     chan = connectedChannel;
                 }
                 catch (NumberFormatException ignored) {}
-                guild.getAudioManager().setSendingHandler(mng.sendHandler);
+                //guild.getAudioManager().setSendingHandler(mng.sendHandler);
 
                 try
                 {
@@ -153,7 +144,7 @@ public class PlayerControl extends ListenerAdapter
             }
             if(connectedChannel == null) event.getChannel().sendMessage("You are not connected to a voice channel!").queue();
             if(!guild.getAudioManager().isConnected()){
-                guild.getAudioManager().setSendingHandler(mng.sendHandler);
+                guild.getAudioManager().setSendingHandler(mng.getSendHandler());
                 guild.getAudioManager().openAudioConnection((AudioChannel) connectedChannel);
             }
             if (command.length == 1) //It is only the command to start playback (probably after pause)
@@ -167,20 +158,20 @@ public class PlayerControl extends ListenerAdapter
                 {
                     event.getChannel().sendMessage("Player is already playing!").queue();
                 }
-                else if (scheduler.queue.isEmpty())
-                {
-                    event.getChannel().sendMessage("The current audio queue is empty! Add something to the queue first!").queue();
-                }
+                //else if (scheduler.queue.isEmpty())
+                //{
+                //    event.getChannel().sendMessage("The current audio queue is empty! Add something to the queue first!").queue();
+               // }
             }
             else    //Commands has 2 parts, !play and url.
             {
-                loadAndPlay(mng, event.getChannel(), command[1], false, event);
+                loadAndPlay(mng, event.getChannel(), command[1], event);
             }
         }
         else if ("!pplay".equals(command[0]) && command.length == 2)
         {
             timerTask.cancel();
-            loadAndPlay(mng, event.getChannel(), command[1], true, event);
+            loadAndPlay(mng, event.getChannel(), command[1], event);
         }
         else if ("!skip".equals(command[0]))
         {
@@ -203,7 +194,7 @@ public class PlayerControl extends ListenerAdapter
         }
         else if ("!stop".equals(command[0]))
         {
-            scheduler.queue.clear();
+            // scheduler.queue.clear();
             player.stopTrack();
             player.setPaused(false);
             event.getChannel().sendMessage("Playback has been completely stopped and the queue has been cleared.").queue();
@@ -234,7 +225,7 @@ public class PlayerControl extends ListenerAdapter
         {
             AudioTrack track = player.getPlayingTrack();
             if (track == null)
-                track = scheduler.lastTrack;
+            // track = scheduler.lastTrack;
 
             if (track != null)
             {
@@ -248,22 +239,22 @@ public class PlayerControl extends ListenerAdapter
         }
         else if ("!repeat".equals(command[0]))
         {
-            scheduler.setRepeating(!scheduler.isRepeating());
-            event.getChannel().sendMessage("Player was set to: **" + (scheduler.isRepeating() ? "repeat" : "not repeat") + "**").queue();
+            //scheduler.setRepeating(!scheduler.isRepeating());
+            //event.getChannel().sendMessage("Player was set to: **" + (scheduler.isRepeating() ? "repeat" : "not repeat") + "**").queue();
         }
         else if ("!reset".equals(command[0]))
         {
-            synchronized (musicManagers)
-            {
-                scheduler.queue.clear();
-                player.destroy();
-                guild.getAudioManager().setSendingHandler(null);
-                musicManagers.remove(guild.getId());
-            }
+            //synchronized (musicManagers)
+            //{
+               // scheduler.queue.clear();
+               // player.destroy();
+               // guild.getAudioManager().setSendingHandler(null);
+              //  musicManagers.remove(guild.getId());
+          //  }
 
-            mng = getMusicManager(guild);
-            guild.getAudioManager().setSendingHandler(mng.sendHandler);
-            event.getChannel().sendMessage("The player has been completely reset!").queue();
+           // mng = getMusicManager(guild);
+           // guild.getAudioManager().setSendingHandler(mng.sendHandler);
+           // event.getChannel().sendMessage("The player has been completely reset!").queue();
 
         }
         else if ("!nowplaying".equals(command[0]) || "!np".equals(command[0]))
@@ -283,7 +274,7 @@ public class PlayerControl extends ListenerAdapter
             else
                 event.getChannel().sendMessage("The player is not currently playing anything!").queue();
         }
-        else if ("!list".equals(command[0]))
+        /*else if ("!list".equals(command[0]))
         {
             Queue<AudioTrack> queue = scheduler.queue;
             synchronized (queue)
@@ -313,8 +304,8 @@ public class PlayerControl extends ListenerAdapter
                     event.getChannel().sendMessage(sb.toString()).queue();
                 }
             }
-        }
-        else if ("!shuffle".equals(command[0]))
+        }*/
+/*        else if ("!shuffle".equals(command[0]))
         {
             if (scheduler.queue.isEmpty())
             {
@@ -323,11 +314,11 @@ public class PlayerControl extends ListenerAdapter
             }
 
             scheduler.shuffle();
-            event.getChannel().sendMessage("The queue has been shuffled!").queue();
-        }
+           // event.getChannel().sendMessage("The queue has been shuffled!").queue();
+      // }
     }
 
-    private void loadAndPlay(GuildMusicManager mng, final Channel channel, String url, final boolean addPlaylist, MessageReceivedEvent event)
+    private void loadAndPlayy(GuildMusicManager mng, final Channel channel, String url, final boolean addPlaylist, MessageReceivedEvent event)
     {
         final String trackUrl;
 
@@ -388,6 +379,54 @@ public class PlayerControl extends ListenerAdapter
         });
     }
 
+    private void loadAndPlay(GuildMusicManager musicManager, final Channel channel, final String trackUrl, MessageReceivedEvent event) {
+
+        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                event.getChannel().sendMessage("Adding to queue " + track.getInfo().title).queue();
+
+                play(event.getGuild(), musicManager, track);
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+                AudioTrack firstTrack = playlist.getSelectedTrack();
+
+                if (firstTrack == null) {
+                    firstTrack = playlist.getTracks().get(0);
+                }
+
+                event.getChannel().sendMessage("Adding to queue " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
+
+                play(event.getGuild(), musicManager, firstTrack);
+            }
+
+            @Override
+            public void noMatches() {
+                event.getChannel().sendMessage("Nothing found by " + trackUrl).queue();
+            }
+
+            @Override
+            public void loadFailed(FriendlyException exception) {
+                event.getChannel().sendMessage("Could not play: " + exception.getMessage()).queue();
+            }
+        });
+    }
+    private void play(Guild guild, GuildMusicManager musicManager, AudioTrack track) {
+        //connectToFirstVoiceChannel(guild.getAudioManager());
+
+        musicManager.scheduler.queue(track);
+    }
+
+    private void skipTrack(Channel channel, GuildMusicManager musicManager) {
+        //GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        musicManager.scheduler.nextTrack();
+
+        //channel.sendMessage("Skipped to next track.").queue();
+    }
+
+
     private GuildMusicManager getMusicManager(Guild guild)
     {
         String guildId = guild.getId();
@@ -418,5 +457,133 @@ public class PlayerControl extends ListenerAdapter
             return String.format("%02d:%02d:%02d", hours, minutes, seconds);
         else
             return String.format("%02d:%02d", minutes, seconds);
+    }
+
+    */
+    // ########################################### //
+
+
+    private final AudioPlayerManager playerManager;
+    private final Map<Long, GuildMusicManager> musicManagers;
+/*
+    private Main() {
+        this.musicManagers = new HashMap<>();
+
+        this.playerManager = new DefaultAudioPlayerManager();
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager);
+    }*/
+    public PlayerControl() {
+        this.musicManagers = new HashMap<>();
+
+        this.playerManager = new DefaultAudioPlayerManager();
+        AudioSourceManagers.registerRemoteSources(playerManager);
+        AudioSourceManagers.registerLocalSource(playerManager);
+    }
+
+    private synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
+        long guildId = Long.parseLong(guild.getId());
+        GuildMusicManager musicManager = musicManagers.get(guildId);
+
+        if (musicManager == null) {
+            musicManager = new GuildMusicManager(playerManager);
+            musicManagers.put(guildId, musicManager);
+        }
+
+        guild.getAudioManager().setSendingHandler(musicManager.getSendHandler());
+
+        return musicManager;
+    }
+
+    @Override
+    public void onMessageReceived(MessageReceivedEvent event) {
+        String[] command = event.getMessage().getContentRaw().split(" ", 2);
+        TextChannel connectedChannel = event.getChannel().asTextChannel();
+
+        if ("!play".equals(command[0]) && command.length == 2) {
+            loadAndPlay(connectedChannel, command[1], event);
+        } else if ("!stop".equals(command[0])) {
+                stopTrack(connectedChannel, event);
+        } else if ("!skip".equals(command[0])) {
+            skipTrack(connectedChannel, event);
+        }
+
+        super.onMessageReceived(event);
+    }
+
+    private void loadAndPlay(final TextChannel channel, final String trackUrl, MessageReceivedEvent event) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+
+        playerManager.loadItemOrdered(musicManager, trackUrl, new AudioLoadResultHandler() {
+            @Override
+            public void trackLoaded(AudioTrack track) {
+                channel.sendMessage("Adding to queue " + track.getInfo().title).queue();
+
+                play(channel.getGuild(), musicManager, track, event);
+            }
+
+            @Override
+            public void playlistLoaded(AudioPlaylist playlist) {
+                AudioTrack firstTrack = playlist.getSelectedTrack();
+
+                if (firstTrack == null) {
+                    firstTrack = playlist.getTracks().get(0);
+                }
+
+                event.getMessage().addReaction(Emoji.fromUnicode("polcow:1228764066047066252")).queue();
+                channel.sendMessage("Adding to queue " + firstTrack.getInfo().title + " (first track of playlist " + playlist.getName() + ")").queue();
+
+                play(channel.getGuild(), musicManager, firstTrack, event);
+            }
+
+            @Override
+            public void noMatches() {
+                channel.sendMessage("Nothing found by " + trackUrl).queue();
+            }
+
+            @Override
+            public void loadFailed(FriendlyException exception) {
+                channel.sendMessage("Could not play: " + exception.getMessage()).queue();
+            }
+        });
+    }
+
+    private void play(Guild guild, GuildMusicManager musicManager, AudioTrack track, MessageReceivedEvent event) {
+        connectToFirstVoiceChannel(guild.getAudioManager());
+
+        musicManager.scheduler.queue(track);
+        event.getMessage().addReaction(Emoji.fromUnicode("polcow:1228764066047066252")).queue();
+    }
+
+    private void skipTrack(TextChannel channel, MessageReceivedEvent event) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        musicManager.scheduler.nextTrack();
+
+        //channel.sendMessage("Skipped to next track.").queue();
+        event.getMessage().addReaction(Emoji.fromUnicode("skipper_deadinside:870900445168681010")).queue();
+    }
+    private void stopTrack(TextChannel channel, MessageReceivedEvent event) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        musicManager.player.stopTrack();
+
+        //channel.sendMessage("Stopped track.").queue();
+        event.getMessage().addReaction(Emoji.fromUnicode("squid:979113110029889546")).queue();
+    }
+
+    private void showQueue(TextChannel channel, MessageReceivedEvent event) {
+        GuildMusicManager musicManager = getGuildAudioPlayer(channel.getGuild());
+        //musicManager.player.stopTrack();
+
+        channel.sendMessage("Stopped track.").queue();
+        //event.getMessage().addReaction(Emoji.fromUnicode("squid:979113110029889546")).queue();
+    }
+
+    private static void connectToFirstVoiceChannel(AudioManager audioManager) {
+        if (!audioManager.isConnected()) {
+            for (VoiceChannel voiceChannel : audioManager.getGuild().getVoiceChannels()) {
+                audioManager.openAudioConnection(voiceChannel);
+                break;
+            }
+        }
     }
 }

@@ -36,7 +36,7 @@ public class JonEvent extends ListenerAdapter {
         triggers = (JSONArray) jsonObject.get("dragonball");
         for (Object key : triggers) {
             if (msg.contains(key.toString())) {
-                event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
+               // event.getChannel().sendMessage("**SHUTUPSHUTUPSHUTUPSHUTUPSHUTUP**").queue();
 
                 if(event.getAuthor().getId().equals("222163619125788682")) {
                     event.getMessage().addReaction(Emoji.fromUnicode("15_neg:934919187787288597")).queue();

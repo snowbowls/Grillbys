@@ -118,35 +118,39 @@ public class PollEvent extends ListenerAdapter {
         Message message = msg;//event.getChannel().retrieveMessageById(event.getMessageId()).complete();
 
         // Check if the message is a poll and the reaction is valid
-        if (!message.getEmbeds().isEmpty() && message.getAuthor().isBot() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())
-                && message.getEmbeds().get(0).getTitle().substring(0,4).equalsIgnoreCase("poll")) {
+        try {
+            if (!message.getEmbeds().isEmpty() && message.getAuthor().isBot() && Arrays.asList(reactions).contains(event.getEmoji().getAsReactionCode())
+                    && message.getEmbeds().get(0).getTitle().substring(0, 4).equalsIgnoreCase("poll")) {
 
-            // Get the poll question and options from the message
-            MessageEmbed originalEmbed = message.getEmbeds().get(0);
-            EmbedBuilder builder = new EmbedBuilder()
-                    .setTitle(originalEmbed.getTitle())
-                    .setDescription(originalEmbed.getDescription())
-                    .setColor(originalEmbed.getColor());
+                // Get the poll question and options from the message
+                MessageEmbed originalEmbed = message.getEmbeds().get(0);
+                EmbedBuilder builder = new EmbedBuilder()
+                        .setTitle(originalEmbed.getTitle())
+                        .setDescription(originalEmbed.getDescription())
+                        .setColor(originalEmbed.getColor());
 
-            int index = 0;
-            for (MessageEmbed.Field field : originalEmbed.getFields()) {
-                int finalIndex = index;
+                int index = 0;
+                for (MessageEmbed.Field field : originalEmbed.getFields()) {
+                    int finalIndex = index;
 
-                int count = message.getReactions().stream()
-                        .filter(reaction -> reaction.getEmoji().getName().equals(Arrays.asList(reactions).get(finalIndex)))
-                        .mapToInt(reaction -> reaction.getCount() - 1)
-                        .sum();
+                    int count = message.getReactions().stream()
+                            .filter(reaction -> reaction.getEmoji().getName().equals(Arrays.asList(reactions).get(finalIndex)))
+                            .mapToInt(reaction -> reaction.getCount() - 1)
+                            .sum();
 
-                String countString = count + " vote" + (count != 1 ? "s" : "");
-                builder.addField(field.getName(), countString, false);
-                index = index + 1;
+                    String countString = count + " vote" + (count != 1 ? "s" : "");
+                    builder.addField(field.getName(), countString, false);
+                    index = index + 1;
+                }
+
+                // Update the poll message in the channel
+                MessageCreateData data = new MessageCreateBuilder()
+                        .addEmbeds(builder.build())
+                        .build();
+                message.editMessage(MessageEditData.fromCreateData(data)).complete();
             }
-
-            // Update the poll message in the channel
-            MessageCreateData data = new MessageCreateBuilder()
-                    .addEmbeds(builder.build())
-                    .build();
-            message.editMessage(MessageEditData.fromCreateData(data)).complete();
+        }catch (NullPointerException e){
+            System.out.println("OMG JON SHUT UP");
         }
 
     }

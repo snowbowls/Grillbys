@@ -31,6 +31,7 @@ public class Bot{
                 .addEventListeners(new GenResponseEvent())
                 .addEventListeners(new PollEvent())
                 .addEventListeners(new JonEvent())
+                //.addEventListeners(new AntiJonPostingEvent())
                 .addEventListeners(new PeriodicEvent())
                 .addEventListeners(new UserStatEvent())
                 .addEventListeners(new ContribroEvent())

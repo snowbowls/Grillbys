@@ -167,16 +167,16 @@ public class GenResponseEvent extends ListenerAdapter {
                 eb.setTitle("Contribution Tracker", null);
                 eb.setColor(new Color(114, 41, 54));
 
-                command.add("This function allows users to claim an item on a list\n\n");
-                command.add(" ...\n");
-                call.add("!contra\n");
-                calldesc.add("REEEE\n");
-                call.add("!contra add XYZ\n");
-                calldesc.add("REEEE\n");
-                call.add("!contra del XYZ\n");
-                calldesc.add("REEEE\n");
-                call.add("!contra clear\n");
-                calldesc.add("REEEE\n");
+                command.add("This function allows users to claim an item on a list, providing a comprehensive tracker for who brings or does what for an event.\n\n");
+                command.add("Any user can add, remove, or reset the list. You can claim as many different items on the list as you want.\n");
+                call.add("!contra\n\n");
+                calldesc.add("Summons tracker and allows users to add their name\n");
+                call.add("!contra add XYZ\n\n\n");
+                calldesc.add("Replace XYZ with the name of the item you'd like to add to the list (spaces allowed)\n");
+                call.add("!contra del XYZ\n\n\n");
+                calldesc.add("Replace XYZ with the name of the item you'd like remove from the list (case sensitive)\n");
+                call.add("!contra clear\n\n");
+                calldesc.add("Resets the tracker, deleting all users and entries\n");
 
                 for(String s : command)
                     commands.append(s);
