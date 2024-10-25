@@ -1,3 +1,0 @@
-logging:
-  level:
-    dev.lavalink.youtube.http.YoutubeOauth2Handler: INFO

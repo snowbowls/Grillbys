@@ -8,6 +8,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import dev.lavalink.youtube.YoutubeAudioSourceManager;
+import dev.lavalink.youtube.http.YoutubeOauth2Handler;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.channel.concrete.TextChannel;
 import net.dv8tion.jda.api.entities.channel.concrete.VoiceChannel;
@@ -15,6 +16,8 @@ import net.dv8tion.jda.api.entities.emoji.Emoji;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -474,17 +477,17 @@ public class PlayerControl extends ListenerAdapter
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
     }*/
+    private static final Logger log = LoggerFactory.getLogger(YoutubeOauth2Handler.class);
     public PlayerControl() {
         this.musicManagers = new HashMap<>();
 
         this.playerManager = new DefaultAudioPlayerManager();
-
         //
         AudioSourceManagers.registerLocalSource(playerManager);
 
         //YoutubeAudioSourceManager ytSourceManager = new YoutubeAudioSourceManager(/*allowSearch:*/ true, new Client[] { new MusicWithThumbnail(), new WebWithThumbnail(), new AndroidTestsuiteWithThumbnail() });
         YoutubeAudioSourceManager source = new YoutubeAudioSourceManager();
-        source.useOauth2(null, false);
+        source.useOauth2("1//05YYwDCzazDmOCgYIARAAGAUSNwF-L9IrhaKgtme9KvELlQz-_wbXD_C92maP8n9XDj81yoMPPaL0i6GF5UwN3PNCZJ044bLXxM8", true);
         //YoutubeAudioSourceManager ytSourceManager = new dev.lavalink.youtube.YoutubeAudioSourceManager();
         this.playerManager.registerSourceManager(source);
         //this.playerManager.registerSourceManager(youtube);
